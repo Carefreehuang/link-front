@@ -25,12 +25,18 @@
                                 :class="{ 'unread-message': message.isRead === 0 }">
                                 <div class="message-card">
                                     <div class="message-header">
-                                        <div class="message-title">{{ message.title }}</div>
-                                        <div class="message-time">{{ message.createTime }}</div>
+                                        <div class="message-title" v-html="message.title"></div>
+                                        <div class="message-time">{{ moment(message.createTime).fromNow() }}</div>
                                     </div>
-                                    <div class="message-content">{{ message.content }}</div>
+                                    <div class="message-content" v-html="message.content"></div>
                                 </div>
                             </li>
+                            <div v-if="activeTab === 'unread' && filteredMessages.length == 0" class="comment-container-box">
+                                <el-empty description="还没有未读消息"/>
+                            </div>
+                            <div v-if="activeTab === 'all' && allMessages.length == 0" class="comment-container-box">
+                                <el-empty description="没有历史消息"/>
+                            </div>
                         </ul>
                         <!-- 分页组件 -->
                         <el-pagination
@@ -55,8 +61,9 @@ import useTabStore from '../../stores/tabStore';
 import useUserStore from '../../stores/userStore';
 import { useRoute, useRouter } from "vue-router";
 import 'element-plus/theme-chalk/display.css';
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { getAllComments, readComment } from '../../api/commentAPI'; // 假设这里有获取消息的 API
+import moment from 'moment';
 
 const route = useRoute();
 const router = useRouter();
@@ -90,6 +97,13 @@ const paginatedMessages = computed(() => {
 });
 
 let timer: number | null = null;
+
+// 卸载定时器
+onUnmounted(() => {
+  if (timer) {
+    clearInterval(timer);
+  }
+});
 
 // 获取消息列表
 const getMessages = async () => {

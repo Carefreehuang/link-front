@@ -147,7 +147,7 @@ const router = createRouter({
             components: {
                 default: () => import('../views/message/MessagePage.vue'),
             },
-            meta: {title: '消息 - ' + global_title, requireAuth: true, requireEmailVerified: true},
+            meta: {title: '消息 - ' + global_title, requireAuth: true},
         },
         {
             path: '/p/:pid(\\d+)',

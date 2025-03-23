@@ -184,7 +184,7 @@ const tabStore = useTabStore();
 const needHiddenLogo = ref(false);
 const currentRouteName = ref('');
 const windowWidth = ref()
-const unReadMsgCount = ref(0)
+const unReadMsgCount = ref()
 let timer: number | null = null;
 
 onMounted(() => {
@@ -282,7 +282,11 @@ const getUnreadMessageCount = async () => {
   try {
     const res = await getUnreadComments();
     if (res.data.unreadComments) {
-      unReadMsgCount.value = res.data.unreadComments.length
+      if (res.data.unreadComments.length > 0) {
+        unReadMsgCount.value = res.data.unreadComments.length;
+      } else {
+        unReadMsgCount = ref();
+      }
     }
   } catch (error) {
     console.error('获取未读消息数失败:', error);
