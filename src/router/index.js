@@ -142,6 +142,14 @@ const router = createRouter({
             meta: {title: '发布帖子 - ' + global_title, requireAuth: true, requireEmailVerified: true},
         },
         {
+            path: '/message',
+            name: 'messagePage',
+            components: {
+                default: () => import('../views/message/MessagePage.vue'),
+            },
+            meta: {title: '消息 - ' + global_title, requireAuth: true, requireEmailVerified: true},
+        },
+        {
             path: '/p/:pid(\\d+)',
             name: 'viewPost',
             components: {

@@ -39,13 +39,6 @@
           </div>
         </div>
       </el-main>
-      <el-aside width="230px" class="hidden-sm-and-down">
-        <StatisticsAside/>
-        <div style="height: 15px"></div>
-        <HotTagAside/>
-        <div style="height: 15px"></div>
-        <CountdownAside/>
-      </el-aside>
     </el-container>
   </div>
 </template>

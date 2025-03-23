@@ -60,8 +60,10 @@
 
             <div v-if="userStore.isLogin" class="logged">
 
-              <el-badge :value="311" class="item" :max="9">
-                <div style="margin-top: 1.2px;"><i class="czs-bell" style="font-size: 20px; color: var(--custom-tabs-color);"></i></div>
+              <el-badge :value="unReadMsgCount" class="item" :max="10" @click="toMsgPage()" >
+                <div class="unread-msg" style="margin-top: 1.2px;">
+                  <i class="czs-bell" style="font-size: 20px; color: var(--custom-tabs-color);"></i>
+                </div>
               </el-badge>
 
               <el-dropdown placement="bottom-end" trigger="click">
@@ -157,7 +159,7 @@
 </template>
 
 <script setup lang="ts">
-import {getCurrentInstance, onMounted, ref, watch} from "vue";
+import {getCurrentInstance, onMounted, ref, watch, onUnmounted} from "vue";
 import ThemeToggle from "./togger/ThemeToggle.vue";
 import useUserStore from '../../../stores/userStore';
 import {ElMessage, ElMessageBox} from "element-plus";
@@ -170,6 +172,7 @@ import SearchBar from "./search/SearchBar.vue";
 import NoVerifyEmailDialog from "../dialog/NoVerifyEmailDialog.vue";
 import {Expand, Menu} from '@element-plus/icons-vue';
 import LeftExpandMenu from "./expand/LeftExpandMenu.vue";
+import {getUnreadComments} from "../../../api/commentAPI";
 
 const logo = import.meta.env.VITE_LOGO_ADDRESS;
 const userStore = useUserStore();
@@ -181,7 +184,14 @@ const tabStore = useTabStore();
 const needHiddenLogo = ref(false);
 const currentRouteName = ref('');
 const windowWidth = ref()
+const unReadMsgCount = ref(0)
+let timer: number | null = null;
+
 onMounted(() => {
+  if (userStore.isLogin) {
+    getUnreadMessageCount();
+    timer = setInterval(getUnreadMessageCount,5000); // 每5s请求一次
+  }
   windowWidth.value = window.innerWidth;
   watch(() => route.name, (New:String) => {
     currentRouteName.value = New;
@@ -198,6 +208,13 @@ onMounted(() => {
     }
   }
 })
+
+// 卸载定时器
+onUnmounted(() => {
+  if (timer) {
+    clearInterval(timer);
+  }
+});
 
 const handleSelect = (key: string, keyPath: string[]) => {
   /*console.log(key, keyPath)*/
@@ -260,6 +277,21 @@ const showLeftExpandDrawer = ref(false);
 function closeLeftExpandDrawer() {
   showLeftExpandDrawer.value = false;
 }
+
+const getUnreadMessageCount = async () => {
+  try {
+    const res = await getUnreadComments();
+    if (res.data.unreadComments) {
+      unReadMsgCount.value = res.data.unreadComments.length
+    }
+  } catch (error) {
+    console.error('获取未读消息数失败:', error);
+  }
+};
+
+const toMsgPage = () => {
+  router.push({ name: 'messagePage' }); // 假设消息界面的路由名为 messagePage
+};
 </script>
 
 <style scoped>
@@ -322,6 +354,12 @@ html.dark #header {
   cursor: pointer;
   color: var(--el-menu-active-color);
 }
+
+.unread-msg:hover {
+  cursor: pointer;
+  color: var(--el-menu-active-color);
+}
+
 
 el-dropdown > .write-icon {
   margin-right: 3px;

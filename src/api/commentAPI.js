@@ -83,3 +83,36 @@ export function getRepliesAPI(pid, parentId) {
         method: 'get'
     })
 }
+
+export function getUnreadComments() {
+    return request({
+        url: '/getUnreadComments',
+            headers: {
+            requireToken: true
+        },
+        method: 'get'
+    })
+}
+
+export function getAllComments() {
+    return request({
+        url: '/getAllComments',
+            headers: {
+            requireToken: true
+        },
+        method: 'get'
+    })
+}
+
+export function readComment(commentId) {
+    return request({
+        url: '/readComment',
+            headers: {
+            requireToken: true
+        },
+        params: {
+            commentId:commentId
+        },
+        method: 'post'
+    })
+}

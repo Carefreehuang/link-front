@@ -30,6 +30,10 @@ const useTabStore = defineStore("tab", {
             { name: "聊天室", path: "/chat", icon: "czs-talk-l" },
             { name: "朋友圈", path: "/moments", icon: "czs-moments" },
         ],
+        messageTabs: [
+            { name: "全部消息", path: "/", },
+            { name: "未读消息", path: tabPrefix + "latest", },
+        ]
     })
 })
 
