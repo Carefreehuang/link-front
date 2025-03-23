@@ -220,6 +220,58 @@ onMounted(() => {
       id: props.cacheId
     },
     placeholder: props.editorPlaceholder, /*输入区域为空时的占位符*/
+    upload: {
+      accept: 'image/*', /*上传图片格式*/
+      url: '/api/upload', /*上传图片地址*/
+      linkToImgUrl: '/api/upload', /*图片链接地址*/
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}` // 从 localStorage 读取 Token
+      },
+      fieldName: 'file',
+      success: (editor: HTMLPreElement, msg: string) => {
+        try {
+          const response = JSON.parse(msg);
+          const fileUrl = response.data;
+          if (fileUrl) {
+            const imgMarkdown = `![图片](${fileUrl})`;
+            editor.innerHTML += imgMarkdown;
+          }
+          ElMessage({
+            showClose: true,
+            duration: 3000,
+            message: response.message,
+            type: 'success',
+          })
+        } catch(error) {
+          console.error('解析服务器响应出错:', error);
+          ElMessage({
+            showClose: true,
+            duration: 3000,
+            message: '解析服务器响应出错',
+            type: 'error',
+          });          
+        }
+      },
+      error: (msg: string) => {
+        try {
+          const response = JSON.parse(msg);
+          ElMessage({
+            showClose: true,
+            duration: 3000,
+            message: response.message,
+            type: 'error',
+          })
+        } catch(error) {
+          console.error('解析服务器响应出错:', error);
+          ElMessage({
+            showClose: true,
+            duration: 3000,
+            message: '解析服务器响应出错',
+            type: 'error',
+          });          
+        }
+      }
+    },   
     after: () => {
       editor.value!.setValue(editor.value.html2md(props.editingContent)); /*编辑器默认占位符*/
     },
