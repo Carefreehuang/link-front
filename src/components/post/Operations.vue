@@ -4,12 +4,12 @@
       <el-button-group class="up-or-down">
         <el-button type="" plain @click="openIncompleteDialog">
           <el-icon>
-            <ArrowUpBold/>
+            <ArrowUpBold />
           </el-icon>
         </el-button>
         <el-button type="" plain @click="openIncompleteDialog">
           <el-icon>
-            <ArrowDownBold/>
+            <ArrowDownBold />
           </el-icon>
         </el-button>
       </el-button-group>
@@ -29,6 +29,11 @@
           <i class="czs-bookmark-l"></i>
         </el-button>
       </el-tooltip>
+      <el-tooltip effect="dark" content="查看联系方式" placement="top-start" :show-after="600" trigger="hover">
+        <el-button type="" size="default" circle @click="openContactDialog">
+          <i class="czs-message-l"></i>
+        </el-button>
+      </el-tooltip>
     </div>
 
     <div class="more">
@@ -38,11 +43,13 @@
         </el-button>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item command="changeContent" v-if="hasRole(['ADMIN', 'MODERATOR']) || hasAuthority(['activity:post:edit']) || props.post.authorUid === userStore.uid"
-                              @click="showDrawerEditor = true">
+            <el-dropdown-item command="changeContent"
+              v-if="hasRole(['ADMIN', 'MODERATOR']) || hasAuthority(['activity:post:edit']) || props.post.authorUid === userStore.uid"
+              @click="showDrawerEditor = true">
               修改内容
             </el-dropdown-item>
-            <el-dropdown-item command="changeTitle" v-if="hasRole(['ADMIN', 'MODERATOR']) || hasAuthority(['activity:title:edit']) || props.post.authorUid === userStore.uid">
+            <el-dropdown-item command="changeTitle"
+              v-if="hasRole(['ADMIN', 'MODERATOR']) || hasAuthority(['activity:title:edit']) || props.post.authorUid === userStore.uid">
               修改标题
             </el-dropdown-item>
             <el-dropdown-item command="changeTag" v-if="hasRole(['ADMIN', 'MODERATOR'])">
@@ -59,35 +66,38 @@
 
   <!-- 抽屉型编辑器 -->
   <el-drawer v-model="showDrawerEditor" title="编辑主题内容" class="drawer-editor" destroy-on-close size="fit-content"
-             :close-on-click-modal="false" :direction="'btt'" :before-close="handleCloseDrawerEditor">
+    :close-on-click-modal="false" :direction="'btt'" :before-close="handleCloseDrawerEditor">
     <Editor ref="drawerEditor" cache-id="editPost" :editing-content="post.content" class="drawer-vditor"
-            @content-length-exceed="contentLengthExceed" @content-length-no-exceed="contentLengthNoExceed"/>
+      @content-length-exceed="contentLengthExceed" @content-length-no-exceed="contentLengthNoExceed" />
     <template #footer>
       <div>
         <el-button color="#626aef" plain @click="handleCloseDrawerEditor">取消修改</el-button>
         <el-button color="#626aef" plain @click="doPostEditedContent" :loading="postEditedLoading"
-                   :disabled="disabledPostEditedContent">确认修改</el-button>
+          :disabled="disabledPostEditedContent">确认修改</el-button>
       </div>
     </template>
   </el-drawer>
 
   <!-- 修改标签对话框 -->
-  <el-dialog v-model="showTagChangeDialog" title="修改标签" class="tag-cascade-dialog" @open="handleOpenTagChangeDialog" :lock-scroll="false">
+  <el-dialog v-model="showTagChangeDialog" title="修改标签" class="tag-cascade-dialog" @open="handleOpenTagChangeDialog"
+    :lock-scroll="false">
     <template #default>
       <div class="post-tags">
         <span>当前标签：</span>
-        <el-tag v-for="(tag, index) of props.post.tags" v-text="tag.name" size="small" class="post-tag" :type="randomTagType(index)"></el-tag>
+        <el-tag v-for="(tag, index) of props.post.tags" v-text="tag.name" size="small" class="post-tag"
+          :type="randomTagType(index)"></el-tag>
       </div>
       <div class="post-tags">
         <span>已选标签：</span>
-        <el-tag v-for="(tag, index) of selectedTagsArr" v-text="tag.name" size="small" class="post-tag" :type="randomTagType(index)"></el-tag>
+        <el-tag v-for="(tag, index) of selectedTagsArr" v-text="tag.name" size="small" class="post-tag"
+          :type="randomTagType(index)"></el-tag>
       </div>
-      <el-cascader-panel ref="dialogTagCascadeRef" v-model="selectedTags" :show-all-levels="false" placeholder="选择标签" size="large"
-                         :props="tagCascadeProp" :options="cascadeOptions" collapse-tags collapse-tags-tooltip popper-class="tag-cascade-panel"
-                         tag-type="success" @change="handleTagSelect">
+      <el-cascader-panel ref="dialogTagCascadeRef" v-model="selectedTags" :show-all-levels="false" placeholder="选择标签"
+        size="large" :props="tagCascadeProp" :options="cascadeOptions" collapse-tags collapse-tags-tooltip
+        popper-class="tag-cascade-panel" tag-type="success" @change="handleTagSelect">
         <template #default="{ node, data }">
-          <span v-text="data.label"/>
-          <span v-if="!node.isLeaf" v-text="' (' + data.children.length + ')'"/>
+          <span v-text="data.label" />
+          <span v-if="!node.isLeaf" v-text="' (' + data.children.length + ')'" />
         </template>
       </el-cascader-panel>
     </template>
@@ -98,26 +108,31 @@
       </span>
     </template>
   </el-dialog>
-
-  <NoLoginDialog :show-no-login-dialog="showNoLoginDialog" @closeNoLoginDialog="handleCloseNoLoginDialog"/>
-  <DevelopingDialog :show-developing-dialog="showDevelopingDialog" @closeDevelopingDialog="handleCloseDevelopingDialog"/>
-  <NoVerifyEmailDialog :show-no-verify-email-dialog="showNoVerifyEmailDialog" @closeNoVerifyEmailDialog="handleCloseNoVerifyEmailDialog"/>
+  <!-- 传递联系方式数据给 ContactDialog 组件 -->
+  <ContactDialog :show-contact-dialog="showContactDialog" :contact-info="contactInfo"
+    @closeNoLoginDialog="handleCloseContactDialog" />
+  <NoLoginDialog :show-no-login-dialog="showNoLoginDialog" @closeNoLoginDialog="handleCloseNoLoginDialog" />
+  <DevelopingDialog :show-developing-dialog="showDevelopingDialog"
+    @closeDevelopingDialog="handleCloseDevelopingDialog" />
+  <NoVerifyEmailDialog :show-no-verify-email-dialog="showNoVerifyEmailDialog"
+    @closeNoVerifyEmailDialog="handleCloseNoVerifyEmailDialog" />
 </template>
 
 <script setup lang="ts">
-import {defineProps, getCurrentInstance, nextTick, reactive, ref} from "vue";
+import { defineProps, getCurrentInstance, nextTick, reactive, ref } from "vue";
 import useUserStore from '../../stores/userStore'
-import {ElMessage, ElMessageBox} from "element-plus";
-import {doPostEditedContentAPI, doPostEditedTitleAPI, doChangeTagOfPostAPI} from '../../api/postAPI';
+import { ElMessage, ElMessageBox } from "element-plus";
+import { doPostEditedContentAPI, doPostEditedTitleAPI, doChangeTagOfPostAPI, getContactAPI } from '../../api/postAPI';
 import useClipboard from "vue-clipboard3";
 import Editor from '../editor/Editor.vue';
-import {hasRole, hasAuthority} from '../../utils/permission';
-import {getTagsAndOptionsAPI} from '../../api/admin/tagAPI';
-import {cascadeTags, classifyTagOptions} from '../../utils/tags'
+import { hasRole, hasAuthority } from '../../utils/permission';
+import { getTagsAndOptionsAPI } from '../../api/admin/tagAPI';
+import { cascadeTags, classifyTagOptions } from '../../utils/tags'
 import NoLoginDialog from "../layout/dialog/NoLoginDialog.vue";
 import DevelopingDialog from "../layout/dialog/DevelopingDialog.vue";
 import NoVerifyEmailDialog from "../layout/dialog/NoVerifyEmailDialog.vue";
-import {isEmailVerified} from '../../utils/permission';
+import ContactDialog from "../layout/dialog/ContactDialog.vue";
+import { isEmailVerified } from '../../utils/permission';
 
 const userStore = useUserStore();
 
@@ -153,7 +168,7 @@ function contentLengthNoExceed() {
 
 /*执行修改帖子内容的操作*/
 const doPostEditedContent = () => {
-  let {editor} = drawerEditor.value;
+  let { editor } = drawerEditor.value;
   postEditedLoading.value = true;
   if (editor.getValue().trim().length <= 0) {
     postEditedLoading.value = false;
@@ -210,12 +225,12 @@ const doPostEditedContent = () => {
 
 function handleCloseDrawerEditor() {
   ElMessageBox.confirm('确定退出编辑?', '关闭确认')
-      .then(() => {
-        showDrawerEditor.value = false;
-      })
-      .catch(() => {
-        // catch error
-      })
+    .then(() => {
+      showDrawerEditor.value = false;
+    })
+    .catch(() => {
+      // catch error
+    })
 }
 
 /*打开修改标题对话框*/
@@ -248,44 +263,44 @@ const openChangeTitleMessageBox = () => {
       } else done();
     },
   })
-      .then(({value}) => {
-        if (value !== null) {
-          if (value === props.post.title) {
-            ElMessage({
-              duration: 3500,
-              message: '标题无变化',
-              type: 'warning',
-            })
-            return;
-          }
-          if (value.length > 100) {
-            ElMessage({
-              message: '请缩减标题长度',
-              type: 'warning',
-            })
-            return;
-          }
-          doPostEditedTitleAPI(props.post.id, value).then(response => {
-            emits('changeTitle', response.data.title)
-            ElMessage({
-              message: '修改标题成功',
-              type: 'success',
-            })
-            console.log(response)
-          }).catch(error => {
-            console.log(error);
-            ElMessage({
-              message: '修改标题失败',
-              type: 'error',
-            })
+    .then(({ value }) => {
+      if (value !== null) {
+        if (value === props.post.title) {
+          ElMessage({
+            duration: 3500,
+            message: '标题无变化',
+            type: 'warning',
           })
+          return;
         }
-      }).catch(() => {})
+        if (value.length > 100) {
+          ElMessage({
+            message: '请缩减标题长度',
+            type: 'warning',
+          })
+          return;
+        }
+        doPostEditedTitleAPI(props.post.id, value).then(response => {
+          emits('changeTitle', response.data.title)
+          ElMessage({
+            message: '修改标题成功',
+            type: 'success',
+          })
+          console.log(response)
+        }).catch(error => {
+          console.log(error);
+          ElMessage({
+            message: '修改标题失败',
+            type: 'error',
+          })
+        })
+      }
+    }).catch(() => { })
 }
 
 /*复制帖子链接*/
 const copyURL = async (url) => {
-  const {toClipboard} = useClipboard();
+  const { toClipboard } = useClipboard();
   try {
     await toClipboard(url);  //实现复制
     ElMessage({
@@ -345,7 +360,7 @@ function handleTagSelect(value) {
 function handleUpdateTagOfPost() {
   let selected = [];
   selectedTags.value.forEach(tagLabel => {
-    selected.push({label: tagLabel})
+    selected.push({ label: tagLabel })
   })
   updateTagOfPostLoading.value = true;
   setTimeout(() => {
@@ -399,6 +414,38 @@ function openIncompleteDialog() {
   } else showNoLoginDialog.value = true;
 }
 
+const showContactDialog = ref(false);
+const contactInfo = ref(''); // 新增：用于存储联系方式数据
+
+function handleCloseContactDialog() {
+  showContactDialog.value = false;
+}
+function openContactDialog() {
+  if (userStore.isLogin) {
+    if (!userStore.emailVerified) {
+      showNoVerifyEmailDialog.value = true;
+    } else {
+      getContactAPI(props.post.id).then(response => {
+        if (response.code === 200) {
+          contactInfo.value = response.data; // 存储获取到的联系方式数据
+          showContactDialog.value = true;
+        } else {
+          ElMessage({
+            message: response.message,
+            type: 'error',
+          })
+        }
+      }).catch(error => {
+        ElMessage({
+          message: error.message,
+          type: 'error',
+        })
+        console.log(error)
+      })
+    }
+  } else showContactDialog.value = true;
+}
+
 const showNoVerifyEmailDialog = ref(false);
 function handleCloseNoVerifyEmailDialog() {
   showNoVerifyEmailDialog.value = false;
@@ -411,15 +458,15 @@ function handleCloseNoVerifyEmailDialog() {
   justify-content: space-between;
 }
 
-.operations > div:first-child {
+.operations>div:first-child {
   margin-right: 10px;
 }
 
-.up-or-down > button {
+.up-or-down>button {
   padding: 8px;
 }
 
-.post-tags > .post-tag:not(:last-child) {
+.post-tags>.post-tag:not(:last-child) {
   margin-right: 5px;
 }
 
@@ -429,8 +476,9 @@ function handleCloseNoVerifyEmailDialog() {
 </style>
 
 <style>
-.post-container + .el-overlay {
-  overflow: visible !important; /*默认的hidden大概率会导致抽屉抖动出现*/
+.post-container+.el-overlay {
+  overflow: visible !important;
+  /*默认的hidden大概率会导致抽屉抖动出现*/
 }
 
 .drawer-editor .el-drawer__footer {
@@ -465,13 +513,15 @@ function handleCloseNoVerifyEmailDialog() {
     width: 54% !important;
     margin-left: 23%;
     margin-right: 23%;
-    border-radius: var(--custom-border-radius) var(--custom-border-radius) 0 0;;
+    border-radius: var(--custom-border-radius) var(--custom-border-radius) 0 0;
+    ;
   }
 }
 
 .up-or-down .el-button--primary:first-child {
   border-right-color: var(--el-color-primary-light-5) !important;
 }
+
 .up-or-down .el-button--primary:last-child {
   border-left-color: var(--el-color-primary-light-5) !important;
 }

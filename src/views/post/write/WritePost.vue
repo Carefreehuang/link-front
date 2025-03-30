@@ -30,8 +30,19 @@
             :clear-content="clearEditorContent" @clear-content-done="clearEditorContentDone"/>
 
     <div class="actionButton">
-      <el-button color="#626aef" plain>设置</el-button>
       <el-button color="#626aef" plain @click="postAction" :disabled="disabledPost" :loading="postLoading">发布</el-button>
+      <el-switch
+        v-model="canContact"
+        class="mt-2"
+        style="margin-left: 24px"
+        inline-prompt
+        active-value="1"
+        inactive-value="0"
+        :active-icon="Check"
+        :inactive-icon="Close"
+        active-text="是"
+        inactive-text="否"
+      /><span style="margin-left: 5px; font-size: 14px;">允许其他用户联系我</span>
       <el-link type="primary" style="float: right; margin-top: 5px;">⌘ 支持 Markdown 语法 ⌘</el-link>
     </div>
 
@@ -89,6 +100,8 @@ const showPostResultClose = ref(false);
 const postResultDialogTitle = ref('');
 const postResultDialogText = ref('');
 const clearEditorContent = ref(false);
+const canContact = ref(0);
+
 const postAction = () => {
   const { editor } = writeEditor.value;
   if (!title.value || title.value.length <= 0) {
@@ -113,7 +126,7 @@ const postAction = () => {
     })
     postLoading.value = true;
     setTimeout(() => {
-      doPost(title.value, editor.getHTML(), selected).then(response => {
+      doPost(title.value, editor.getHTML(), selected, canContact.value).then(response => {
         showPostResultDialog.value = true;
         showPostResultClose.value = false;
         postResultDialogTitle.value = '发布成功';

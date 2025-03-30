@@ -285,7 +285,7 @@ const getUnreadMessageCount = async () => {
       if (res.data.unreadComments.length > 0) {
         unReadMsgCount.value = res.data.unreadComments.length;
       } else {
-        unReadMsgCount = ref();
+        unReadMsgCount.value = '';
       }
     }
   } catch (error) {

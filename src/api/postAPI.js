@@ -1,11 +1,12 @@
 import request from "@/utils/request";
 
 /*发布帖子*/
-export function doPost(title, content, tags) {
+export function doPost(title, content, tags, canContact) {
     const data = {
         title,
         content,
         tags,
+        canContact,
     };
     return request({
         url: '/post',
@@ -116,5 +117,18 @@ export function getHotPostsAPI(currentPage) {
             page: currentPage,
         },
         method: 'get',
+    })
+}
+
+export function getContactAPI(pid) {
+    return request({
+        url: '/getContact',
+        headers: {
+            requireToken: true
+        },
+        params: {
+            pid: pid
+        },
+        method: 'get'
     })
 }
