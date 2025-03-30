@@ -19,13 +19,15 @@
             <el-skeleton animated :loading="loadingProfile" :rows="1" style="display: flex; flex-direction: column;">
               <template #default>
                 <div class="detail-top">
-                  <div v-if="user.state.nickname" v-text="user.state.nickname" class="nickname"/>
-                  <div v-else v-text="user.state.username" class="nickname"/>
+                  <div v-text="user.state.username" class="username"/>
                   <el-tag class="mod-tag" v-text="'MOD'" size="small" type="danger" effect="dark" v-if="false"/>
-                  <div v-text="'@' + user.state.username" class="username"></div>
+                  <div v-text="user.state.email" class="email"></div>
                   <div>
-                    <el-tooltip v-if="user.state.emailVerified" content="已激活" placement="top" :show-after="600">
+                    <el-tooltip v-if="user.state.emailVerified" content="邮箱已认证" placement="top" :show-after="600">
                       <el-icon class="verified-icon"><SuccessFilled /></el-icon>
+                    </el-tooltip>
+                    <el-tooltip v-else content="邮箱未认证" placement="top" :show-after="600">
+                      <el-icon class="unVerified-icon"><WarningFilled /></el-icon>
                     </el-tooltip>
                   </div>
                 </div>
@@ -40,13 +42,9 @@
                       <div class="offline-time" v-text="'5 小时前'"></div>
                     </el-tooltip>
                   </div>
-                  <div class="reg-time">
-                    <div style="margin: 3px 3px 0 0;"><i class="czs-bar-chart-l"/></div>
-                    <el-tooltip effect="dark" :content="user.state.createTime" placement="bottom" :show-after="600">
-                      <div class="offline-time" v-text="'加入于 ' + moment(user.state.createTime).fromNow()"></div>
-                    </el-tooltip>
-                  </div>
-                  <div v-text="'No.' + user.state.id" class="serial-number"/>
+                  <el-tag v-if="user.state.school" type="primary" round effect="dark" class="user-info-tag">{{user.state.school}}</el-tag>
+                  <el-tag v-if="user.state.major" type="primary" round effect="plain" class="user-info-tag">{{user.state.major}}</el-tag>
+                  <el-tag v-if="user.state.createTime" type="primary" round effect="light" class="user-info-tag">{{'加入于 ' + moment(user.state.createTime).fromNow()}}</el-tag>
                 </div>
               </template>
             </el-skeleton>
@@ -55,17 +53,11 @@
       </div>
       <el-tabs :tab-position="'top'" class="user-tabs" type="border-card">
 
-        <el-tab-pane label="主题" lazy>
+        <el-tab-pane label="帖子" lazy>
           <UserPosts :username="props.username"/>
         </el-tab-pane>
-        <el-tab-pane label="评论" lazy>
-          <UserComments/>
-        </el-tab-pane>
-        <el-tab-pane label="关注" lazy>
-          <UserFollows/>
-        </el-tab-pane>
-        <el-tab-pane label="收藏" lazy>
-          <UserBookmarks/>
+        <el-tab-pane label="擅长技能" lazy>
+          <UserPosts :username="props.username"/>
         </el-tab-pane>
       </el-tabs>
     </el-main>
@@ -172,7 +164,7 @@ html.dark .user-box {
   display: inline-flex;
 }
 
-.nickname {
+.username {
   font-size: 35px;
   font-weight: 600;
   margin-right: 8px;
@@ -181,14 +173,14 @@ html.dark .user-box {
   color: transparent;
 }
 
-.username {
+.email {
   font-size: 18px;
   margin-right: 8px;
   background: linear-gradient(to right,#409EFF,#529b2e);
   -webkit-background-clip: text;
 }
 
-.username, .serial-number {
+.email, .serial-number {
   color: transparent;
 }
 
@@ -217,10 +209,8 @@ html.dark .user-box {
 .online-text {
   margin-left: 3px;
 }
-
-.last-online-time, .reg-time {
-  display: inline-flex;
-  cursor: pointer;
+.user-info-tag {
+  margin: 0px 3px;
 }
 
 .last-online-time .czs-time-l {
@@ -279,6 +269,9 @@ html.dark .user-tabs {
 
 .verified-icon {
   color: #8ebc8f;
+}
+.unVerified-icon {
+  color: #ee1212;
 }
 </style>
 

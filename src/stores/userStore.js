@@ -19,6 +19,11 @@ const useUserStore = defineStore("user", {
         role: [],
         authorities: [],
         isLogin: false,
+        school: '',
+        major: '',
+        wechat: '',
+        qq: '',
+        phone: '',
     }),
     actions: {
         /*用户登录*/
@@ -55,6 +60,11 @@ const useUserStore = defineStore("user", {
                         avatar: user.avatar,
                         createTime: user.createTime,
                         registerIp: user.registerIp,
+                        school: user.school,
+                        major: user.major,
+                        wechat: user.wechat,
+                        qq: user.qq,
+                        phone: user.phone,
                     })
 
                     if (user.role) {
@@ -99,6 +109,11 @@ const useUserStore = defineStore("user", {
                 createTime: this.createTime,
                 registerIp: this.registerIp,
                 role: this.role,
+                school: this.school,
+                major: this.major,
+                wechat: this.wechat,
+                qq: this.qq,
+                phone: this.phone,
             };
         }
     },

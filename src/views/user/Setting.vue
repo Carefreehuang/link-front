@@ -2,9 +2,9 @@
   <el-container class="setting-container">
     <el-main class="setting-main">
       <el-tabs :tab-position="windowWidth > 768 ? 'left' : 'top'" class="setting-tabs" type="border-card" v-model="activeTab" @tab-click="changeTab">
-        <el-tab-pane label="头像" name="avatar">
+        <!-- <el-tab-pane label="头像" name="avatar">
           <UpdateAvatar/>
-        </el-tab-pane>
+        </el-tab-pane> -->
 
         <el-tab-pane label="资料" name="profile">
           <UpdateProfile/>
@@ -54,7 +54,6 @@ import {onBeforeMount, onMounted, reactive, ref, watch} from "vue";
 import {TabsPaneContext} from "element-plus";
 import {useRoute, useRouter} from "vue-router";
 import UpdateProfile from "../../components/user/setting/UpdateProfile.vue";
-import UpdateAvatar from "../../components/user/setting/UpdateAvatar.vue";
 import UpdateAccount from "../../components/user/setting/UpdateAccount.vue";
 import StatisticsAside from "../../components/layout/aside/index/StatisticsAside.vue";
 import CountdownAside from "../../components/layout/aside/index/CountdownAside.vue";

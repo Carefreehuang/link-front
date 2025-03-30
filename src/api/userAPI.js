@@ -30,16 +30,32 @@ export function getUserPostsAPI(username) {
     })
 }
 
-export function updateNicknameAPI(nickname) {
+export function updateSchoolAndMajor(school, major) {
     return request({
-        url: '/updateNickname',
+        url: '/updateSchoolAndMajor',
         params: {
-            nickname: nickname
+            school: school,
+            major: major
         },
         headers: {
             requireToken: true,
         },
-        method: 'get'
+        method: 'Post'
+    })
+}
+
+export function updateContactInfoAPI(wechat, qq, phone) {
+    return request({
+        url: '/updateContactInfo',
+        params: {
+            wechat: wechat,
+            qq: qq,
+            phone: phone
+        },
+        headers: {
+            requireToken: true,
+        },
+        method: 'Post'
     })
 }
 

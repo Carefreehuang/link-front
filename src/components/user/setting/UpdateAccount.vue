@@ -11,7 +11,7 @@
       </el-form-item>
       <el-form-item label="新密码" prop="newPassword" :error="newPasswordErrorText">
         <el-input v-model.trim="model.newPassword" type="password" show-password clearable
-                  placeholder="请输入包含大小写字母、数字和特殊符号的新密码，至少八位"
+                  placeholder="请输入包含数字和字母的新密码"
                   :keyup.native="model.newPassword=model.newPassword.replace(/\s+/g, '')"/>
       </el-form-item>
       <el-form-item label="重复新密码" prop="confirmNewPassword" :error="confirmNewPasswordErrorText">
@@ -28,38 +28,17 @@
     </div>
     <el-form ref="usernameFormRef" :model="model" :rules="rules" size="large"  status-icon
              label-position="top" label-width="100px" class="username-form">
-      <el-form-item label="当前用户名">
-        <el-input :placeholder="userStore.username" readonly></el-input>
-      </el-form-item>
-      <el-form-item label="新用户名" prop="username">
-        <el-input v-model.trim="model.username" maxlength="12" show-word-limit clearable
-                  placeholder="请输入纯英文字符或纯数字，也可以是英文+数字组合，至少两位"
+      <el-form-item label="用户名" prop="username">
+        <el-input placeholder="请输入用户名" v-model.trim="model.username" maxlength="12" show-word-limit clearable
                   :keyup.native="model.username=model.username.replace(/\s+/g, '')"/>
       </el-form-item>
       <el-button size="large" class="username-button">保存</el-button>
     </el-form>
   </div>
-
-  <div class="email">
-    <div class="header-detail">
-      <div>▼ 更换邮箱</div>
-    </div>
-    <el-form ref="emailFormRef" :model="model" :rules="rules" size="large"  status-icon
-             label-position="top" label-width="100px" class="email-form">
-      <el-form-item label="当前邮箱">
-        <el-input :placeholder="userStore.email" readonly/>
-      </el-form-item>
-      <el-form-item label="新邮箱" prop="email">
-        <el-input v-model.trim="model.email" type="email" clearable placeholder="请输入新邮箱"
-                  :keyup.native="model.email=model.email.replace(/\s+/g, '')"/>
-      </el-form-item>
-      <el-button size="large" class="email-button">保存</el-button>
-    </el-form>
-  </div>
 </template>
 
 <script setup lang="ts">
-import {reactive, ref} from 'vue';
+import {onMounted, reactive, ref} from 'vue';
 import {ElMessage, FormInstance, FormRules} from "element-plus";
 import useUserStore from '../../../stores/userStore';
 import _ from 'lodash';
@@ -68,7 +47,6 @@ import {updatePasswordAPI} from '../../../api/userAPI';
 const userStore = useUserStore();
 
 const usernameFormRef = ref<FormInstance>();
-const emailFormRef = ref<FormInstance>();
 const passwordFormRef = ref<FormInstance>();
 
 const model = reactive({
@@ -81,7 +59,7 @@ const model = reactive({
 
 const validatePassword = (rule: any, value: any, callback: any) => {
   if (value.length >= 8) {
-    let reg = /(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}/;
+    let reg = /^(?=.*\d)(?=.*[A-Za-z]).{8,20}$/;
     if (!reg.test(value)) {
       callback(new Error('密码格式有误'));
       return;
@@ -117,9 +95,6 @@ const validateConfirmNewPassword = (rule: any, value: any, callback: any) => {
 const rules = reactive<FormRules>({
   username: [
     { required: true, message: '请输入新用户名', trigger: 'change' },
-  ],
-  email: [
-    { required: true, message: '请输入新邮箱', trigger: 'change' },
   ],
   password: [
     { required: true, message: '请输入当前密码', trigger: 'change' },
@@ -180,6 +155,10 @@ const passwordSubmit = _.throttle((formRef: FormInstance | undefined) => {
     })
   }, 500)
 }, 1000)
+
+onMounted(() => {
+  model.username = userStore.username || '';
+})
 </script>
 
 <style scoped>
