@@ -26,12 +26,31 @@
                 :keyup.native="user.username=user.username.replace(/\s+/g, '')"
             />
           </el-form-item>
+          <el-form-item label="学校" prop="school">
+            <el-cascader
+              v-model="selectedOptions"
+              :options="cascaderOptions"
+              :props="cascaderProps"
+              @change="handleChange"
+              style="width: 428px"
+            >
+            </el-cascader>
+          </el-form-item>
+          <el-form-item label="专业" prop="major">
+            <el-input
+                type="text"
+                autocomplete="off"
+                v-model.trim="user.major"
+                :keyup.native="user.major=user.major.replace(/\s+/g, '')"
+            />
+          </el-form-item>
           <el-form-item label="邮箱" prop="email" :error="emailErrorText">
             <el-input
                 type="email"
                 autocomplete="off"
                 v-model.trim="user.email"
                 :keyup.native="user.email=user.email.replace(/\s+/g, '')"
+                placeholder="请输入教育邮箱(以edu.cn结尾)"
             />
           </el-form-item>
           <el-form-item label="密码" prop="password" :error="passwordErrorText">
@@ -100,6 +119,7 @@ import {
   checkUsernameUnique,
   register,
 } from '../../api/loginApi'
+import axios from 'axios';
 
 const logo = import.meta.env.VITE_LOGO_ADDRESS;
 
@@ -127,8 +147,105 @@ const user = reactive({
   confirmPassword: '',
   captcha: '',
   captchaOwner: '',
+  school: '',
+  major: '',
 })
 
+
+
+// 选中的选项
+const selectedOptions = ref([]);
+
+// 级联选择器的选项
+const cascaderOptions = ref([]);
+
+// 级联选择器的配置项
+const cascaderProps = ref({
+  value: 'value',
+  label: 'label',
+  children: 'children',
+  checkStrictly: true, // 可以单独选中每一项
+  changeOnSelect: true // 每选择一项都会触发 change 事件
+});
+
+// 获取省份列表
+const getProvinces = async () => {
+  try {
+    const response = await axios.get('https://api.hcfpz.cn/un/provinces');
+    if (response.data.errno === '0') {
+      const provinces = response.data.data;
+      cascaderOptions.value = provinces.map(province => ({
+        value: province,
+        label: province,
+        children: []
+      }));
+    }
+  } catch (error) {
+    console.error('获取省份列表失败:', error);
+  }
+};
+
+// 获取城市列表
+const getCities = async (province) => {
+  try {
+    const response = await axios.get(`https://api.hcfpz.cn/un/citys?province=${province}`);
+    if (response.data.errno === '0') {
+      const cities = response.data.data;
+      const provinceIndex = cascaderOptions.value.findIndex(item => item.value === province);
+      if (provinceIndex !== -1) {
+        cascaderOptions.value[provinceIndex].children = cities.map(city => ({
+          value: city,
+          label: city,
+          children: []
+        }));
+      }
+    }
+  } catch (error) {
+    console.error('获取城市列表失败:', error);
+  }
+};
+
+// 获取学校列表
+const getSchools = async (province, city) => {
+  try {
+    const response = await axios.get(`https://api.hcfpz.cn/un/schools?province=${province}&city=${city}`);
+    if (response.data.errno === '0') {
+      const schools = response.data.data;
+      const provinceIndex = cascaderOptions.value.findIndex(item => item.value === province);
+      if (provinceIndex !== -1) {
+        const cityIndex = cascaderOptions.value[provinceIndex].children.findIndex(item => item.value === city);
+        if (cityIndex !== -1) {
+          cascaderOptions.value[provinceIndex].children[cityIndex].children = schools.map(school => ({
+            value: school.name,
+            label: school.name
+          }));
+        }
+      }
+    }
+  } catch (error) {
+    console.error('获取学校列表失败:', error);
+  }
+};
+
+// 处理级联选择器的变化事件
+const handleChange = (value) => {
+  selectedOptions.value = value
+  if (value.length === 1) {
+    const province = value[0];
+    getCities(province);
+  } else if (value.length === 2) {
+    const [province, city] = value;
+    getSchools(province, city);
+  } else if (value.length === 3) {
+    const [, , school] = value;
+    user.school = school;
+    // 三层都选完后，手动触发关闭弹窗
+    const cascader = document.querySelector('.el-cascader__dropdown');
+    if (cascader) {
+      cascader.style.display = 'none';
+    }
+  }
+};
 /**
  * 校验表单中的用户名
  * @param rule 指向校验规则的对象
@@ -137,14 +254,15 @@ const user = reactive({
  */
 const ValidateUsername = (rule: any, value: any, callback: any) => {
   if (value.length < 4) {
-    callback(new Error('请继续输入'));
+    callback(new Error('用户名长度需大于4'));
   } else if (value.length > 12) {
     callback(new Error('用户名超出长度'));
   } else {
-    const reg = /^[A-Za-z\d]+$/;
+    // 允许英文、下划线、中文等
+    const reg = /^[\u4E00-\u9FA5A-Za-z0-9_]+$/;
     setTimeout(() => {
       if (!reg.test(value)) {
-        callback(new Error('用户名仅限英文字符或数字'));
+        callback(new Error('非法字符'));
         return;
       }
       checkUsernameUnique(value).then(response => {
@@ -164,10 +282,11 @@ const ValidateUsername = (rule: any, value: any, callback: any) => {
  */
 const ValidatePassword = (rule: any, value: any, callback: any) => {
   if (value.length >= 8) {
-    const reg = /^(?=.*\d.*)(?=.*[A-Z].*)(?=.*[a-z].*)(?=.*[`~!@#$%^&*()_\-+=<>.?:"{}].*).{8,20}$/;
+    // 必须包含数字和字母，长度在8-20之间
+    const reg = /^(?=.*\d)(?=.*[A-Za-z]).{8,20}$/;
     setTimeout(() => {
       if (!reg.test(value)) {
-        callback(new Error('密码需包含大小写字母、数字和特殊符号'));
+        callback(new Error('密码需包含数字和字母'));
         return;
       } else {
         // 修改 password 后，通知 rePassword 再次校验两次输入的密码是否一致
@@ -187,7 +306,8 @@ const ValidatePassword = (rule: any, value: any, callback: any) => {
  * @param callback 校验结束的回调函数
  */
 const ValidateEmail = (rule: any, value: any, callback: any) => {
-  const reg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
+  // 必须是教育邮箱
+  const reg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.(edu|edu\.cn|ac\.cn)$/;
   setTimeout(() => {
     if (!reg.test(value)) {
       callback(new Error('请输入正确的邮箱地址'));
@@ -254,6 +374,20 @@ const userRules = reactive<FormRules>({
       validator: ValidateEmail,
       trigger: 'change'
     }
+  ],
+  school: [
+    {
+      required: true,
+      message: '请选择大学',
+      trigger: 'change'
+    },
+  ],
+  major: [
+    {
+      required: true,
+      message: '请输入专业',
+      trigger: 'change'
+    },
   ],
   password: [
     {
@@ -395,6 +529,12 @@ const getCaptcha = _.debounce(() => {
   })
 }, 500)
 getCaptcha();
+// 组件挂载时获取省份列表
+const init = async () => {
+  await getProvinces();
+};
+
+init();
 </script>
 
 

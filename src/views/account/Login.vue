@@ -114,7 +114,7 @@ const user = reactive({
  * @param callback 校验结束的回调函数
  */
 const ValidateUsername = (rule: any, value: any, callback: any) => {
-  const reg = /^[A-Za-z\d]+$/;
+  const reg = /^[\u4E00-\u9FA5A-Za-z0-9_]+$/;
   setTimeout(() => {
     if (!reg.test(value)) {
       callback(new Error('用户名格式不对'));
@@ -129,7 +129,7 @@ const ValidateUsername = (rule: any, value: any, callback: any) => {
  * @param callback 校验结束的回调函数
  */
 const ValidatePassword = (rule: any, value: any, callback: any) => {
-  const reg = /(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}/;
+  const reg = /^(?=.*\d)(?=.*[A-Za-z]).{8,20}$/;
   setTimeout(() => {
     if (!reg.test(value)) {
       callback(new Error('请检查密码'));

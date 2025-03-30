@@ -8,7 +8,9 @@ export function register(userInfo) {
         data: {
             username: userInfo.username.trim(),
             password: userInfo.password,
-            email: userInfo.email
+            email: userInfo.email,
+            school: userInfo.school,
+            major: userInfo.major
         }
     })
 }
