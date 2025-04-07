@@ -8,7 +8,7 @@
     <el-col :xs="23" :sm="23" :md="23" :lg="14" :xl="14" id="core-body"> <!-- 主体内容 -->
       <router-view v-slot="{ Component, route }">
         <transition :name="route.meta.mainTransition || 'fade-transform'" mode="out-in">
-          <keep-alive :exclude="['ViewPost', 'Comments', 'MakeComment', 'Profile', 'Tags', 'Tag']">
+          <keep-alive :exclude="['ViewPost', 'Comments', 'MakeComment', 'Profile', 'Tags', 'Tag', 'ViewCompetition']">
             <component :is="Component"/>
           </keep-alive>
         </transition>

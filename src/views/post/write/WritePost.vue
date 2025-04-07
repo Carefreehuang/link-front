@@ -3,7 +3,7 @@
     <div class="hidden-xs-only">
       <el-input v-model="title" placeholder="请输入标题" class="title-tag" clearable size="large">
         <template #prepend>
-          <el-cascader ref="dialogTagCascadeRef" v-model="selectedTags" :options="cascadeOptions" :show-all-levels="false" placeholder="请选择标签" size="large"
+          <el-cascader ref="dialogTagCascadeRef" v-model="selectedTags" :options="cascadeOptions" :show-all-levels="false" placeholder="请选择相关标签" size="large"
                        :props="tagCascadeProp" collapse-tags collapse-tags-tooltip popper-class="tag-cascade"
                        tag-type="success" @change="handleTagSelect">
             <template #default="{ node, data }">
@@ -27,7 +27,7 @@
     </div>
 
     <Editor ref="writeEditor" height="80vh" @limit-exceed="limitExceed" @no-limit-exceed="noLimitExceed" :cache-id="'newPost'"
-            :clear-content="clearEditorContent" @clear-content-done="clearEditorContentDone"/>
+            :clear-content="clearEditorContent" @clear-content-done="clearEditorContentDone" editorPlaceholder="请输入帖子内容"/>
 
     <div class="actionButton">
       <el-button color="#626aef" plain @click="postAction" :disabled="disabledPost" :loading="postLoading">发布</el-button>

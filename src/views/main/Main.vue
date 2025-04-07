@@ -14,17 +14,6 @@
                     <span v-text="tab.name"></span>
                   </router-link>
                 </div>
-                <div class="activity hidden-xs-only" v-if="userStore.isLogin">
-                  <el-tooltip effect="dark" content="活跃度 100% 时将自动签到" placement="left" :show-after="600">
-                    <el-progress
-                        :text-inside="true"
-                        :stroke-width="22"
-                        :percentage="65"
-                        status="warning"
-                        style="width: 15%; cursor: default;"
-                    />
-                  </el-tooltip>
-                </div>
               </div>
             </el-scrollbar>
           </div>

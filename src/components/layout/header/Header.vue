@@ -36,8 +36,6 @@
 
             <el-menu :default-active="activeMenu()" router class="header-menu hidden-sm-and-down" mode="horizontal"
                      @select="handleSelect" background-color="transparent">
-              <el-menu-item index="/">首页</el-menu-item>
-              <el-menu-item index="/about">关于</el-menu-item>
               <el-menu-item index="/test" v-if="false">测试</el-menu-item>
             </el-menu>
           </el-col>
@@ -47,7 +45,7 @@
 
             <SearchBar/>
 
-            <ThemeToggle/>
+            <!-- <ThemeToggle/> -->
 
             <div class="search hidden-sm-and-up" @click="router.push({name: 'search'})">
               <i class="czs-search-l"/>
@@ -71,15 +69,15 @@
                 <template #dropdown>
                   <el-dropdown-menu class="drop-item">
                     <el-dropdown-item>
-                      <div class="write-post" @click="toWrite()">
-                        <div><i class="czs-pen-write"></i></div>
-                        <div>创建主题</div>
+                      <div class="write-blog" @click="toRelease()">
+                        <div><i class="czs-medal-l"></i></div>
+                        <div>发布比赛</div>
                       </div>
                     </el-dropdown-item>
                     <el-dropdown-item command="copyURL">
                       <div class="write-blog" @click="toWrite()">
                         <div><i class="czs-book-l"></i></div>
-                        <div>发表文章</div>
+                        <div>发布帖子</div>
                       </div>
                     </el-dropdown-item>
                   </el-dropdown-menu>
@@ -263,6 +261,14 @@ function activeMenu() {
 function toWrite() {
   if (userStore.emailVerified) {
     router.push({name: 'writePost'});
+  } else {
+    showNoVerifyEmailDialog.value = true;
+  }
+}
+
+function toRelease() {
+  if (userStore.emailVerified) {
+    router.push({name: 'releaseCompetition'});
   } else {
     showNoVerifyEmailDialog.value = true;
   }

@@ -11,3 +11,15 @@ export function uploadAvatarAPI(action, data) {
         data: data
     })
 }
+
+export function uploadAPI(action, file) {
+    return request({
+        url: action,
+        method: 'post',
+        headers: {
+            'Content-Type': 'multipart/form-data',
+            requireToken: true,
+        },
+        data: file
+    })
+}

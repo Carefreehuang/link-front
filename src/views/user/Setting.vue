@@ -91,7 +91,7 @@ onBeforeMount(() => {
     case 'ui': activeTab.value = 'ui'; break;
     case 'balance': activeTab.value = 'balance'; break;
     case 'invite': activeTab.value = 'invite'; break;
-    default: activeTab.value = 'avatar'; break;
+    default: activeTab.value = 'profile'; break;
   }
 })
 </script>

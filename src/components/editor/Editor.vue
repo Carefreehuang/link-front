@@ -119,7 +119,7 @@ const props = defineProps({
   },
   editorPlaceholder: {
     type: String,
-    default: '和平交流，理性发言'
+    default: '请输入内容'
   },
   showOutline: {
     type: Boolean,

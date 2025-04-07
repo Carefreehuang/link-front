@@ -12,15 +12,14 @@ const route = useRoute();
 
 const searchRef = ref<SearchInstance>()
 const config = ref<SearchConfig>({
-  keywords: ['交通规则', '交通常识', '交通工具'], // 搜索框关键字滚动
+  keywords: ['计算机设计大赛', '挑战杯', '正大杯', '蓝桥杯', 'CCPC'], // 搜索框关键字滚动
   hotSearchList: [
-      '交通工具分类',
-      '过马路常识',
-      '交通安全小提示',
-      '交通规则大全',
-      '交通法',
-      '交通事故处理',
-      '文明驾驶'
+      '正大杯',
+      '蓝桥杯',
+      '计算机设计大赛',
+      '挑战杯',
+      'ACM',
+      'CCPC',
   ] // top10 热门搜索 最多显示10条数据
 })
 

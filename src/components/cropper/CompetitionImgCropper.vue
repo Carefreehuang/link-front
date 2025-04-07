@@ -63,7 +63,7 @@ const props = defineProps({
 })
 
 /*裁剪完成后，通知父组件上传裁剪完成的图*/
-const emits = defineEmits(['uploadCroppedAvatar', 'closeAvatarCropperDialog'])
+const emits = defineEmits(['uploadCroppedCompetitionImg', 'closeCompetitionImgCropperDialog'])
 
 const option = ref({
   info: true, /*裁剪框的大小信息*/
@@ -78,7 +78,7 @@ const option = ref({
   maxImageSize: 200, /*限制图片最大宽度和高度*/
   centerBox: true, /*截图框是否限制在图片里面*/
   fixed: true, /*开启截图框宽高固定比例*/
-  fixedNumber: [1, 1], /*截图框 [宽, 高] 比例*/
+  fixedNumber: [16, 6], /*截图框 [宽, 高] 比例*/
   autoCropWidth: 300, /*默认生成截图框宽度*/
   autoCropHeight: 300, /*默认生成截图框高度*/
   infoTrue: false, /* true 为展示真实输出图片宽高, false 展示看到的截图框宽高 */
@@ -122,17 +122,17 @@ const currentInstance = getCurrentInstance();
 function saveCroppedImage () {
   if(props.imgType === 'blob') {
     currentInstance.ctx.$refs.cropper.getCropBlob(data => {
-      emits('uploadCroppedAvatar', data)
+      emits('uploadCroppedCompetitionImg', data)
     })
   } else {
     currentInstance.ctx.$refs.cropper.getCropData(data => {
-      emits('uploadCroppedAvatar', data)
+      emits('uploadCroppedCompetitionImg', data)
     })
   }
 }
 
 function closeDialog() {
-  emits('closeAvatarCropperDialog')
+  emits('closeCompetitionImgCropperDialog')
 }
 </script>
 

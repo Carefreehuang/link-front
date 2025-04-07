@@ -142,6 +142,23 @@ const router = createRouter({
             meta: {title: '发布帖子 - ' + global_title, requireAuth: true, requireEmailVerified: true},
         },
         {
+            path: '/release',
+            name: 'releaseCompetition',
+            components: {
+                default: () => import('../views/competition/release/ReleaseCompetiton.vue'),
+            },
+            meta: {title: '发布竞赛 - ' + global_title, requireAuth: true, requireEmailVerified: true},
+        },
+        {
+            path: '/c/:pid(\\d+)',
+            name: 'ViewCompetition',
+            components: {
+                default: () => import('../views/competition/view/ViewCompetition.vue'),
+            },
+            props: {default: true},
+            meta: {title: global_title}
+        },
+        {
             path: '/message',
             name: 'messagePage',
             components: {
