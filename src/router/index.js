@@ -108,6 +108,11 @@ const router = createRouter({
                     meta: {title: '管理中心 - 标签 - ' + global_title}
                 },
                 {
+                    path: 'category', name: 'adminCategory',
+                    components: {sysMain: () => import('../views/tabs/admin/AdminCategory.vue')},
+                    meta: {title: '管理中心 - 赛事分类 - ' + global_title}
+                },
+                {
                     path: 'authority', name: 'adminAuthority',
                     components: {sysMain: () => import('../views/tabs/admin/AdminAuthority.vue')},
                     meta: {title: '管理中心 - 权限 - ' + global_title}

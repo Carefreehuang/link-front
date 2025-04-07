@@ -26,6 +26,10 @@
         <el-icon><PriceTag /></el-icon>
         <template #title>标签</template>
       </el-menu-item>
+      <el-menu-item :index="systemCtrlURI + '/category'">
+        <el-icon><Guide /></el-icon>
+        <template #title>赛事分类</template>
+      </el-menu-item>
       <el-menu-item :index="systemCtrlURI + '/authority'" v-if="false">
         <el-icon><Key /></el-icon>
         <template #title>权限</template>
