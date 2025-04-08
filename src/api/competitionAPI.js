@@ -1,11 +1,10 @@
 import request from "@/utils/request";
 
-export function releaseCompetitionAPI(competitionName, description, categoryId, tag, officialWebsite, registrationStart, registrationEnd, competitionStart, competitionEnd, competitionImg) {
+export function releaseCompetitionAPI(competitionName, description, categoryId, officialWebsite, registrationStart, registrationEnd, competitionStart, competitionEnd, competitionImg) {
     const data = {
         competitionName, 
         description, 
         categoryId, 
-        tag, 
         officialWebsite, 
         registrationStart, 
         registrationEnd, 

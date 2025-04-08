@@ -1,12 +1,13 @@
 import request from "@/utils/request";
 
 /*发布帖子*/
-export function doPost(title, content, tags, canContact) {
+export function doPost(title, content, tags, canContact, competitionId) {
     const data = {
         title,
         content,
         tags,
         canContact,
+        competitionId
     };
     return request({
         url: '/post',
@@ -128,6 +129,20 @@ export function getContactAPI(pid) {
         },
         params: {
             pid: pid
+        },
+        method: 'get'
+    })
+}
+
+export function getPostsByCompetitionAPI(competitionId, page) {
+    return request({
+        url: '/listPostByCompetition',
+        headers: {
+            requireToken: true
+        },
+        params: {
+            competitionId: competitionId,
+            page: page,
         },
         method: 'get'
     })

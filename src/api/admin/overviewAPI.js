@@ -14,5 +14,8 @@ export function getForumAPI() {
     return request({
         url: '/forumInfo',
         method: 'get',
+        headers: {
+            requireToken: true,
+        }
     })
 }

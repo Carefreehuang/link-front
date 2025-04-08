@@ -17,12 +17,12 @@
     <!-- 报名时间 & 比赛时间 -->
     <el-row :gutter="20" class="mt-10">
       <el-col :span="12">
-        <el-date-picker v-model="registrationTime" type="datetimerange" range-separator="至"
-                        start-placeholder="报名开始时间" end-placeholder="报名截止时间" style="width: 95%;" />
+        <el-date-picker v-model="registrationTime" type="datetimerange" range-separator="至" start-placeholder="报名开始时间"
+          end-placeholder="报名截止时间" style="width: 95%;" />
       </el-col>
       <el-col :span="12">
-        <el-date-picker v-model="competitionTime" type="datetimerange" range-separator="至"
-                        start-placeholder="比赛开始时间" end-placeholder="比赛结束时间" style="width: 95%;" />
+        <el-date-picker v-model="competitionTime" type="datetimerange" range-separator="至" start-placeholder="比赛开始时间"
+          end-placeholder="比赛结束时间" style="width: 95%;" />
       </el-col>
     </el-row>
 
@@ -33,57 +33,33 @@
           <el-option v-for="item in categorys" :key="item.id" :label="item.name" :value="item.id" />
         </el-select>
       </el-col>
-      <el-col :span="12">
-        <el-cascader ref="dialogTagCascadeRef" v-model="selectedTags" :options="cascadeOptions"
-                     :show-all-levels="false" placeholder="请选择相关标签" size="medium"
-                     :props="tagCascadeProp" collapse-tags collapse-tags-tooltip popper-class="tag-cascade"
-                     tag-type="success" @change="handleTagSelect" class="full-width">
-          <template #default="{ node, data }">
-            <span v-text="data.label" />
-            <span v-if="!node.isLeaf" v-text="' (' + data.children.length + ')'" />
-          </template>
-        </el-cascader>
-      </el-col>
     </el-row>
 
     <!-- 赛事海报上传（按钮上传） -->
     <el-row :gutter="20" class="mt-10">
       <el-col :span="24">
-        <el-upload
-          ref="uploader"
-          class="uploader"
-          :action="uploaderAction"
-          :auto-upload="false"
-          :show-file-list="true"
-          :limit="1"
-          :on-change="onUploaderChange"
-          accept="image/jpeg, image/png"
-          :before-upload="beforeUpload"
-          :on-remove="removeUpload"
-          :http-request="httpRequest"
-        >
-          <el-button type="primary" >
-            <el-icon><Upload /></el-icon>
+        <el-upload ref="uploader" class="uploader" :action="uploaderAction" :auto-upload="false" :show-file-list="true"
+          :limit="1" :on-change="onUploaderChange" accept="image/jpeg, image/png" :before-upload="beforeUpload"
+          :on-remove="removeUpload" :http-request="httpRequest">
+          <el-button type="primary">
+            <el-icon>
+              <Upload />
+            </el-icon>
             上传赛事海报
           </el-button>
         </el-upload>
       </el-col>
     </el-row>
-    <CompetitionImgCropper
-      v-if="showCropperDialog"
-      :dialog-title="'上传赛事海报'"
-      :dialog-visible="showCropperDialog"
-      :cropper-image="cropperCompetitionImg"
-      img-type="blob"
+    <CompetitionImgCropper v-if="showCropperDialog" :dialog-title="'上传赛事海报'" :dialog-visible="showCropperDialog"
+      :cropper-image="cropperCompetitionImg" img-type="blob"
       @upload-cropped-competitionImg="uploadCroppedCompetitionImg"
-      @close-competitionImg-cropper-dialog="closeCompetitionImgCropperDialog"
-    />
+      @close-competitionImg-cropper-dialog="closeCompetitionImgCropperDialog" />
 
     <!-- 竞赛描述（Vditor 编辑器） -->
     <el-row class="mt-10">
       <el-col :span="24">
-        <Editor ref="writeEditor" height="60vh" :cache-id="'newCompetition'"
-                :clear-content="clearEditorContent" @clear-content-done="clearEditorContentDone" editorPlaceholder="请输入赛事详细内容" />
+        <Editor ref="writeEditor" height="60vh" :cache-id="'newCompetition'" :clear-content="clearEditorContent"
+          @clear-content-done="clearEditorContentDone" editorPlaceholder="请输入赛事详细内容" />
       </el-col>
     </el-row>
 
@@ -171,7 +147,6 @@ function httpRequest(request) {
 const competitionName = ref('');
 const officialWebsite = ref('');
 const competitionCategory = ref('');
-const selectedTags = ref([]);
 const registrationTime = ref([]);
 const competitionTime = ref([]);
 const competitionImg = ref('');
@@ -187,39 +162,10 @@ const getCategorys = async () => {
     console.error("获取分类数据失败:", error);
   }
 }
-
-// 竞赛标签
-const cascadeOptions = ref([]);
-const tagCascadeProp = reactive({
-  multiple: true,
-  emitPath: false,
-});
-
 onBeforeMount(() => {
-  // 获取标签数据
-  getTagsAndOptionsAPI().then(response => {
-    let tagOptions = classifyTagOptions(response.data.tagOptions);
-    let tags = response.data.tags;
-    cascadeOptions.value = cascadeTags(tags, tagOptions);
-  }).catch(error => {
-    console.log(error);
-  });
   // 获取分类数据
   getCategorys();
 });
-
-// 限制最多选择 3 个标签
-const oldSelectedTags = ref();
-function handleTagSelect(value) {
-  if (value.length <= 3) {
-    oldSelectedTags.value = value;
-  } else {
-    ElMessage({ message: '最多只能选择 3 个标签', type: 'warning' });
-    nextTick(() => {
-      selectedTags.value = oldSelectedTags.value;
-    });
-  }
-}
 
 // 发布竞赛
 const postLoading = ref(false);
@@ -263,8 +209,6 @@ const postCompetition = () => {
     ElMessage({ message: '请输入竞赛描述', type: 'warning' });
   } else if (!competitionCategory.value) {
     ElMessage({ message: '请选择竞赛分类', type: 'warning' });
-  } else if (!selectedTags.value.length) {
-    ElMessage({ message: '请选择至少一个标签', type: 'warning' });
   } else if (!registrationTime.value.length) {
     ElMessage({ message: '请选择报名时间', type: 'warning' });
   } else if (!competitionTime.value.length) {
@@ -279,7 +223,6 @@ const postCompetition = () => {
         competitionName.value,
         editor.getValue(),
         competitionCategory.value,
-        selectedTags.value,
         officialWebsite.value,
         dayjs(registrationTime.value[0]).format("YYYY-MM-DD HH:mm:ss"),
         dayjs(registrationTime.value[1]).format("YYYY-MM-DD HH:mm:ss"),
@@ -297,11 +240,10 @@ const postCompetition = () => {
           postResultDialogText.value = `${time} 秒后将自动跳转到竞赛详情页...`;
           if (time === 0) {
             clearInterval(timer);
-            router.push({ path: '/competition/' + Math.random().toString(36).substr(2, 9) });
+            router.push({ path: '/c/' + res.data.competitionId });
             showPostResultDialog.value = false;
             competitionName.value = '';
             competitionCategory.value = '';
-            selectedTags.value = [];
             registrationTime.value = [];
             competitionTime.value = [];
           }
@@ -354,4 +296,4 @@ function clearEditorContentDone() {
   display: flex;
   justify-content: center;
 }
-</style>    
+</style>

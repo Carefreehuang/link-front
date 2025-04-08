@@ -1,27 +1,6 @@
 <template>
   <div class="status-box" v-loading="loading" element-loading-text="正在加载">
-    <el-empty v-if="!loading && cpu.coreNum === 0" description="加载出错"/>
-    <div v-if="!loading && cpu.coreNum !== 0">
-      <div class="system-status">
-        <el-progress type="dashboard" :percentage="cpu.idle" :color="colors">
-          <template #default="{ percentage }">
-            <span class="percentage-value">{{ percentage }}%</span>
-            <span class="percentage-label">CPU使用率</span>
-          </template>
-        </el-progress>
-        <el-progress type="dashboard" :percentage="cpu.temperature" :color="colors">
-          <template #default="{ percentage }">
-            <span class="percentage-value">{{ percentage }}℃</span>
-            <span class="percentage-label">CPU温度</span>
-          </template>
-        </el-progress>
-        <el-progress type="dashboard" :percentage="memory.availablePercentage" :color="colors">
-          <template #default="{ percentage }">
-            <span class="percentage-value">{{ percentage }}%</span>
-            <span class="percentage-label">内存使用率</span>
-          </template>
-        </el-progress>
-      </div>
+    <div v-if="!loading">
       <div class="forum-status">
         <el-card shadow="hover" class="status-card" style="width: 200px;">
           <el-statistic title="用户数" :value="forum.userNumber" />
@@ -29,33 +8,28 @@
         <el-card shadow="hover" class="status-card" style="width: 200px;">
           <el-statistic title="文章数" :value="forum.postNumber" />
         </el-card>
+        <el-card shadow="hover" class="status-card" style="width: 200px;">
+          <el-statistic title="竞赛数" :value="forum.competitionNumber" />
+        </el-card>
       </div>
-      <el-empty description="其它状态正在生产中" style="padding-top: 0;"/>
+      <el-empty description="其它状态正在生产中" style="padding-top: 0;" />
     </div>
   </div>
 </template>
 
 <script setup>
-import {onBeforeMount, onBeforeUnmount, reactive, ref, watch} from 'vue';
-import {getSystemAPI, getForumAPI} from "../../../api/admin/overviewAPI";
-import {useRouter} from "vue-router";
+import { onBeforeMount, reactive } from 'vue';
+import { getForumAPI } from "../../../api/admin/overviewAPI";
+import { useRouter } from "vue-router";
 
 const router = useRouter();
 
-const cpu = reactive({
-  coreNum: 0,
-  idle: 0,
-  temperature: 0,
-})
 const forum = reactive({
   userNumber: 0,
   postNumber: 0,
+  competitionNumber: 0,
 })
-const memory = reactive({
-  total: '',
-  available: '',
-  availablePercentage: 0,
-})
+
 
 const colors = [
   { color: '#006400', percentage: 10 },
@@ -73,71 +47,18 @@ const colors = [
 onBeforeMount(() => {
   getSystemInfo();
 })
-onBeforeUnmount(() => {
-  clearInterval(getSystemInfoInternal);
-})
-watch(() => cpu.coreNum, (New, Old) => {
-  if (New > 0) {
-    getSystemInfoInternal;
-  }
-})
 
-const loading = ref(false);
-function getSystemInfo() {
-  loading.value = true;
-  getSystemAPI().then(response => {
-    console.log(response)
-    let cpuData = response.data.cpu;
-    cpu.idle = cpuData.idle.substring(cpuData.idle, cpuData.idle.length-1);
-
-    cpu.coreNum = cpuData.coreNum;
-    cpu.temperature = cpuData.temperature;
-
-    let forumData = response.data.forum;
-    forum.userNumber = forumData.userNumber;
-    forum.postNumber = forumData.postNumber;
-
-    let memoryData = response.data.memory;
-    memory.total = memoryData.total;
-    memory.available = memoryData.available;
-
-    handleAvailableMemory(memory.total, memory.available)
-  }).finally(() => {
-    loading.value = false;
-  })
-}
-const getSystemInfoInternal = setInterval(() => {
-  getSystemAPI().then(response => {
-    let cpuData = response.data.cpu;
-    cpu.idle = cpuData.idle.substring(cpuData.idle, cpuData.idle.length-1);
-    cpu.coreNum = cpuData.coreNum;
-    cpu.temperature = cpuData.temperature;
-
-    let forumData = response.data.forum;
-    forum.userNumber = forumData.userNumber;
-    forum.postNumber = forumData.postNumber;
-
-    let memoryData = response.data.memory;
-    memory.total = memoryData.total;
-    memory.available = memoryData.available;
-
-    handleAvailableMemory(memory.total, memory.available)
-  })
-}, 1500)
-
-function handleAvailableMemory(total, available) {
-  let totalUnit = total.slice(-2);
-  let totalNumber = total.substring(0, total.length - 2);
-
-  let availableUnit = available.slice(-2);
-  let availableNumber = available.substring(0, available.length - 2);
-
-  if (totalUnit === availableUnit) {
-    memory.availablePercentage = ((totalNumber - availableNumber) / totalNumber * 100).toFixed(2);
-  } else if (totalUnit === 'GB' && availableUnit === 'MB') {
-    memory.availablePercentage = (((totalNumber * 1024 - availableNumber) / (totalNumber * 1024)) * 100).toFixed(2);
+const getSystemInfo = async () => {
+  const res = await getForumAPI();
+  if (res.code === 200) {
+    forum.userNumber = res.data.userNumber;
+    forum.postNumber = res.data.postNumber;
+    forum.competitionNumber = res.data.competitionNumber;
+  } else {
+    ElMessage.error(res.msg);
   }
 }
+
 </script>
 
 <style scoped>
@@ -146,28 +67,34 @@ function handleAvailableMemory(total, available) {
   margin-top: 10px;
   font-size: 28px;
 }
+
 .percentage-label {
   display: block;
   margin-top: 10px;
   font-size: 12px;
 }
+
 .demo-progress .el-progress--line {
   margin-bottom: 15px;
   width: 350px;
 }
+
 .demo-progress .el-progress--circle {
   margin-right: 15px;
 }
 
-.system-status, .forum-status {
+.system-status,
+.forum-status {
   display: flex;
   align-items: center;
   justify-content: space-evenly;
   padding: 50px 0;
 }
+
 .system-status {
   border-bottom: 1px solid #e4e7ec;
 }
+
 html.dark .system-status {
   border-bottom-color: #333840;
 }
