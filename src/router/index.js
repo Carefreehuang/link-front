@@ -49,6 +49,16 @@ const router = createRouter({
             ]
         },
         {
+            path: '/competitions',
+            children: [
+                {
+                    path: '', name: 'competitions',
+                    components: {default: () => import('../views/competition/view/CompetitionList.vue')},
+                    meta: {title: "赛事 - " + global_title, mainTransition: '', bodyTransition: ''},
+                },
+            ]
+        },
+        {
             path: '/t/:tagLabel',
             components: {default: () => import('../views/tag/Tag.vue')},
             props: {default: true},
