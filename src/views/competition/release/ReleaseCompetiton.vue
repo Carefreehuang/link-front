@@ -30,7 +30,7 @@
     <el-row :gutter="20" class="mt-10">
       <el-col :span="12">
         <el-select v-model="competitionCategory" placeholder="请选择竞赛分类" class="full-width">
-          <el-option v-for="item in categoryOptions" :key="item.value" :label="item.label" :value="item.value" />
+          <el-option v-for="item in categorys" :key="item.id" :label="item.name" :value="item.id" />
         </el-select>
       </el-col>
       <el-col :span="12">
@@ -114,6 +114,7 @@ import { releaseCompetitionAPI } from "../../../api/competitionAPI";
 import dayjs from 'dayjs';
 import CompetitionImgCropper from "../../../components/cropper/CompetitionImgCropper.vue";
 import { uploadAPI } from "../../../api/uploadAPI";
+import { getAllCategoryAPI } from "../../../api/admin/categoryAPI";
 
 const router = useRouter();
 
@@ -176,13 +177,16 @@ const competitionTime = ref([]);
 const competitionImg = ref('');
 
 // 竞赛分类选项
-const categoryOptions = ref([
-  { label: "数学建模", value: 1 },
-  { label: "编程竞赛", value: 2 },
-  { label: "人工智能", value: 3 },
-  { label: "设计竞赛", value: 4 },
-  { label: "其他", value: 5 },
-]);
+const categorys = ref([]);
+const getCategorys = async () => {
+  try {
+    const res = await getAllCategoryAPI();
+    console.log("获取分类数据...", res);
+    categorys.value = res.data;
+  } catch (error) {
+    console.error("获取分类数据失败:", error);
+  }
+}
 
 // 竞赛标签
 const cascadeOptions = ref([]);
@@ -191,8 +195,8 @@ const tagCascadeProp = reactive({
   emitPath: false,
 });
 
-// 获取标签数据
 onBeforeMount(() => {
+  // 获取标签数据
   getTagsAndOptionsAPI().then(response => {
     let tagOptions = classifyTagOptions(response.data.tagOptions);
     let tags = response.data.tags;
@@ -200,6 +204,8 @@ onBeforeMount(() => {
   }).catch(error => {
     console.log(error);
   });
+  // 获取分类数据
+  getCategorys();
 });
 
 // 限制最多选择 3 个标签
