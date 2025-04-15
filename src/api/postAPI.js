@@ -147,3 +147,55 @@ export function getPostsByCompetitionAPI(competitionId, page) {
         method: 'get'
     })
 }
+
+export function viewPostAPI(pid) {
+    return request({
+        url: '/viewPost',
+        headers: {
+            requireToken: true
+        },
+        params: {
+            pid: pid
+        },
+        method: 'put'
+    })
+}
+
+export function likePostAPI(pid) {
+    return request({
+        url: '/likePost',
+        headers: {
+            requireToken: true
+        },
+        params: {
+            pid: pid
+        },
+        method: 'post'
+    })
+}
+
+export function getPostLikeAPI(pid) {
+    return request({
+        url: '/getPostLike',
+        headers: {
+            requireToken: true
+        },
+        params: {
+            pid: pid
+        },
+        method: 'get'
+    })
+}
+
+export function isLikePostAPI(pid) {
+    return request({
+        url: '/isLikePost',
+        headers: {
+            requireToken: true
+        },
+        params: {
+            pid: pid
+        },
+        method: 'get'
+    })
+}

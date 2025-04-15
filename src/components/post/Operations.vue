@@ -1,7 +1,7 @@
 <template>
   <div class="post-operations">
     <div class="operations">
-      <el-button-group class="up-or-down">
+      <!-- <el-button-group class="up-or-down">
         <el-button type="" plain @click="openIncompleteDialog">
           <el-icon>
             <ArrowUpBold />
@@ -12,14 +12,16 @@
             <ArrowDownBold />
           </el-icon>
         </el-button>
-      </el-button-group>
+      </el-button-group> -->
 
-      <el-tooltip effect="dark" content="感谢" placement="top-start" :show-after="600" trigger="hover">
-        <el-button type="" size="default" circle @click="openIncompleteDialog">
-          <i class="czs-heart-l"></i>
+      <el-tooltip effect="dark" content="点赞" placement="top-start" :show-after="600" trigger="hover">
+        <el-button type="" size="default" circle @click="like">
+          <el-tooltip effect="dark" content="点赞" placement="top-start" :show-after="600" trigger="hover">
+            <i :class="isLike ? 'czs-heart' : 'czs-heart-l'"></i>
+          </el-tooltip>
         </el-button>
       </el-tooltip>
-      <el-tooltip effect="dark" content="关注" placement="top-start" :show-after="600" trigger="hover">
+      <!-- <el-tooltip effect="dark" content="关注" placement="top-start" :show-after="600" trigger="hover">
         <el-button type="" size="default" circle @click="openIncompleteDialog">
           <i class="czs-star-l"></i>
         </el-button>
@@ -28,7 +30,7 @@
         <el-button type="" size="default" circle @click="openIncompleteDialog">
           <i class="czs-bookmark-l"></i>
         </el-button>
-      </el-tooltip>
+      </el-tooltip> -->
       <el-tooltip effect="dark" content="查看联系方式" placement="top-start" :show-after="600" trigger="hover">
         <el-button type="" size="default" circle @click="openContactDialog">
           <i class="czs-message-l"></i>
@@ -119,10 +121,10 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, getCurrentInstance, nextTick, reactive, ref } from "vue";
+import { defineProps, getCurrentInstance, nextTick, onBeforeMount, reactive, ref } from "vue";
 import useUserStore from '../../stores/userStore'
 import { ElMessage, ElMessageBox } from "element-plus";
-import { doPostEditedContentAPI, doPostEditedTitleAPI, doChangeTagOfPostAPI, getContactAPI } from '../../api/postAPI';
+import { doPostEditedContentAPI, doPostEditedTitleAPI, doChangeTagOfPostAPI, getContactAPI, likePostAPI, isLikePostAPI } from '../../api/postAPI';
 import useClipboard from "vue-clipboard3";
 import Editor from '../editor/Editor.vue';
 import { hasRole, hasAuthority } from '../../utils/permission';
@@ -164,6 +166,42 @@ function contentLengthExceed() {
 
 function contentLengthNoExceed() {
   disabledPostEditedContent.value = false
+}
+
+onBeforeMount(() => {
+  hasLike()
+})
+
+/*判断是否点赞*/
+const isLike = ref(false) /*是否点赞*/
+
+const like = async () => {
+  const res = await likePostAPI(props.post.id);
+  if (res.code === 200) {
+    ElMessage({
+      message: res.message,
+      type: 'success',
+    })
+    isLike.value = !isLike.value; // 切换点赞状态
+  } else {
+    ElMessage({
+      message: res.message,
+      type: 'error',
+    })
+  }
+}
+
+const hasLike = async () => {
+  const res = await isLikePostAPI(props.post.id);
+  if (res.code === 200) {
+    isLike.value = res.data;
+  } else {
+    ElMessage({
+      message: res.message,
+      type: 'error',
+    })
+    return false;
+  }
 }
 
 /*执行修改帖子内容的操作*/

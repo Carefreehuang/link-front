@@ -25,10 +25,6 @@
                   </router-link>
                   <ul class="post-attach">
                     <li>
-                      <div class="post-attach-icon"><i class="czs-heart" /></div>
-                      <span v-text="'0'" />
-                    </li>
-                    <li>
                       <div class="post-attach-icon" style="margin-top: 1.4px;"><i class="czs-eye"
                           style="font-size: 18px;" /></div>
                       <span v-text="competition.views" />
@@ -53,12 +49,7 @@
               </el-tag>
             </div>
           </div>
-          <div class="post-container-footer" v-if="!loading">
-            <Operations :post="competition" @change-content="changeContent" @change-title="changeTitle"
-              @change-tags="changePostTags" />
-          </div>
         </div>
-
 
         <PostList :posts="posts" v-if="!loading" :total-items="totalItems" :total-page="totalPages"
           :current-page="currentPage" :size-per-page="sizePerPage" :is-all-post="false" @changePage="changeCurrentPage"
@@ -84,7 +75,7 @@ import HotTagAside from "../../../components/layout/aside/index/HotTagAside.vue"
 import CountdownAside from "../../../components/layout/aside/index/CountdownAside.vue";
 import PostAuthorAside from "../../../components/layout/aside/post/PostAuthorAside.vue";
 import { useRoute, useRouter } from "vue-router";
-import { getCompetitionInfoAPI } from "../../../api/competitionAPI";
+import { getCompetitionInfoAPI, viewCompetitionAPI } from "../../../api/competitionAPI";
 
 const userStore = useUserStore();
 const themeStore = useThemeStore();
@@ -167,19 +158,19 @@ watch(() => themeStore.currentTheme, (New, Old) => {
 })
 
 const getPostsByCompetitionId = async () => {
-  console.log(props.pid, currentPage.value)
   const res = await getPostsByCompetitionAPI(props.pid, currentPage.value);
-  console.log(res)
   posts.value = res.data.posts;
 
 }
 
 onMounted(() => {
   getPostsByCompetitionId();
+  viewCompetiton();
 })
-console.log('ewqewqe')
 
-console.log(competition)
+const viewCompetiton = async () => {
+  await viewCompetitionAPI(props.pid);
+}
 
 // 渲染主题内容
 const renderMarkdown = (content) => {

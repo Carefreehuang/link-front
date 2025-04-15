@@ -16,7 +16,7 @@
                 <template #header>
                     <div class="card-header">赛事列表</div>
                 </template>
-                <el-table :data="paginatedCompetitions" stripe @row-click="handleRowClick" class="competition-table">
+                <el-table :data="paginatedCompetitions" @row-click="handleRowClick" class="competition-table">
                     <el-table-column prop="competitionName" label="赛事名称"></el-table-column>
                     <el-table-column prop="registrationStart" label="报名开始时间"></el-table-column>
                     <el-table-column prop="registrationEnd" label="报名截止时间"></el-table-column>

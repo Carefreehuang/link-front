@@ -1,81 +1,88 @@
 <template>
   <div v-if="replyNum === 0" class="comment-container-box">
-    <el-empty description="还没有人评论"/>
+    <el-empty description="还没有人评论" />
   </div>
 
   <div v-else class="comment-container-box" id="comments">
-      <div class="comments">
-        <el-skeleton :loading="loading" animated style="padding: 0 0 12px 0;">
-          <template #template></template>
-          <template #default>
-            <div class="comment" v-for="(comment, index) of comments" :key="index">
-              <router-link :to="{path: '/u/' + comment.fromUsername}" style="height: 40px;">
-                <el-avatar shape="square" :size="'default'" :src="comment.fromAvatar"></el-avatar>
-              </router-link>
-              <div class="comment-content-box">
-                <div class="comment-content-header">
-                  <ul class="header-left">
-                    <li v-if="comment.fromNickname">
-                      <router-link :to="{path: '/u/' + comment.fromUsername}" v-text="comment.fromNickname" class="author-name"/>
-                    </li>
-                    <li v-else>
-                      <router-link :to="{path: '/u/' + comment.fromUsername}" v-text="comment.fromUsername" class="author-name"/>
-                    </li>
-                    <el-tag class="op-tag" v-if="props.authorId === comment.fromUid" v-text="'OP'" size="small" type="warning" round effect="plain"/>
-                    <el-tooltip :content="comment.createTime" placement="top" :show-after="600">
-                      <li v-text="moment(comment.createTime).fromNow()" class="create-time hidden-xs-only"></li>
-                    </el-tooltip>
-                  </ul>
-                  <div class="header-right">
-                    <div v-if="userStore.isLogin && userStore.emailVerified" style="cursor: pointer;" class="hidden-xs-only" @click="openIncompleteDialog"><i class="czs-warning"/></div>
-                    <div v-if="userStore.isLogin && userStore.emailVerified" style="cursor: pointer;" @click="openIncompleteDialog"><i class="czs-heart"/></div>
-                    <ShowReplies :replies-num="comment.repliesNum" :pid="props.pid" :cid="comment.id" :c-index="index"
-                                 :author-id="props.authorId" :comment="comment" @update-replies-num="updateRepliesNum"/>
-                    <div class="floor" v-text="'#' + (index + 1)"></div>
-                  </div>
-                </div>
-                <div class="comment-content-sub-header hidden-sm-and-up">
+    <div class="comments">
+      <el-skeleton :loading="loading" animated style="padding: 0 0 12px 0;">
+        <template #template></template>
+        <template #default>
+          <div class="comment" v-for="(comment, index) of comments" :key="index">
+            <router-link :to="{ path: '/u/' + comment.fromUsername }" style="height: 40px;">
+              <el-avatar shape="square" :size="'default'" :src="comment.fromAvatar"></el-avatar>
+            </router-link>
+            <div class="comment-content-box">
+              <div class="comment-content-header">
+                <ul class="header-left">
+                  <li v-if="comment.fromNickname">
+                    <router-link :to="{ path: '/u/' + comment.fromUsername }" v-text="comment.fromNickname"
+                      class="author-name" />
+                  </li>
+                  <li v-else>
+                    <router-link :to="{ path: '/u/' + comment.fromUsername }" v-text="comment.fromUsername"
+                      class="author-name" />
+                  </li>
+                  <el-tag class="op-tag" v-if="props.authorId === comment.fromUid" v-text="'OP'" size="small"
+                    type="warning" round effect="plain" />
                   <el-tooltip :content="comment.createTime" placement="top" :show-after="600">
-                    <div v-text="moment(comment.createTime).fromNow()" class="create-time" style="margin-top: -1px;"></div>
+                    <li v-text="moment(comment.createTime).fromNow()" class="create-time hidden-xs-only"></li>
                   </el-tooltip>
-                  <div class="report-comment"><i class="czs-warning"/></div>
-                </div>
-                <div class="comment-content-body">
-                  <u-fold unfold line="5" class="comment-fold">
-                    <span class="vditor-reset comment-content" id="comment-content" v-dompurify-html="comment.content"/>
-                  </u-fold>
-                </div>
-                <div class="comment-content-footer">
-
+                </ul>
+                <div class="header-right">
+                  <!-- <div v-if="userStore.isLogin && userStore.emailVerified" style="cursor: pointer;"
+                    class="hidden-xs-only" @click="openIncompleteDialog"><i class="czs-warning" /></div>
+                  <div v-if="userStore.isLogin && userStore.emailVerified" style="cursor: pointer;"
+                    @click="openIncompleteDialog"><i class="czs-heart" /></div> -->
+                  <ShowReplies :replies-num="comment.repliesNum" :pid="props.pid" :cid="comment.id" :c-index="index"
+                    :author-id="props.authorId" :comment="comment" @update-replies-num="updateRepliesNum" />
+                  <div class="floor" v-text="'#' + (index + 1)"></div>
                 </div>
               </div>
+              <div class="comment-content-sub-header hidden-sm-and-up">
+                <el-tooltip :content="comment.createTime" placement="top" :show-after="600">
+                  <div v-text="moment(comment.createTime).fromNow()" class="create-time" style="margin-top: -1px;">
+                  </div>
+                </el-tooltip>
+                <div class="report-comment"><i class="czs-warning" /></div>
+              </div>
+              <div class="comment-content-body">
+                <u-fold unfold line="5" class="comment-fold">
+                  <span class="vditor-reset comment-content" id="comment-content" v-dompurify-html="comment.content" />
+                </u-fold>
+              </div>
+              <div class="comment-content-footer">
+
+              </div>
             </div>
-          </template>
-        </el-skeleton>
-      </div>
+          </div>
+        </template>
+      </el-skeleton>
+    </div>
   </div>
 
   <div class="divider">
-    <el-divider class="d-1" direction="vertical"/>
-    <el-divider class="d-2" direction="vertical"/>
+    <el-divider class="d-1" direction="vertical" />
+    <el-divider class="d-2" direction="vertical" />
   </div>
 
-  <MakeComment :reply-num="props.replyNum" :pid="props.pid" @insert-new-comment="insertNewComment"/>
+  <MakeComment :reply-num="props.replyNum" :pid="props.pid" @insert-new-comment="insertNewComment" />
 
-  <NoLoginDialog :show-no-login-dialog="showNoLoginDialog" @closeNoLoginDialog="handleCloseNoLoginDialog"/>
-  <DevelopingDialog :show-developing-dialog="showDevelopingDialog" @closeDevelopingDialog="handleCloseDevelopingDialog"/>
+  <NoLoginDialog :show-no-login-dialog="showNoLoginDialog" @closeNoLoginDialog="handleCloseNoLoginDialog" />
+  <DevelopingDialog :show-developing-dialog="showDevelopingDialog"
+    @closeDevelopingDialog="handleCloseDevelopingDialog" />
 </template>
 
 <script setup lang="ts">
-import {reactive, ref} from "vue";
+import { reactive, ref } from "vue";
 import useUserStore from "../../stores/userStore";
-import {getCommentsAPI} from "../../api/commentAPI";
+import { getCommentsAPI } from "../../api/commentAPI";
 import MakeComment from '../comment/make/MakeComment.vue';
 import 'element-plus/theme-chalk/display.css';
 import VditorPreview from 'vditor/dist/method.min';
 import moment from "moment";
 import ShowReplies from "./replies/ShowReplies.vue";
-import {ElMessage} from "element-plus";
+import { ElMessage } from "element-plus";
 import NoLoginDialog from "../layout/dialog/NoLoginDialog.vue";
 import DevelopingDialog from "../layout/dialog/DevelopingDialog.vue";
 
@@ -205,14 +212,17 @@ function openIncompleteDialog() {
   border-radius: var(--custom-border-radius);
   border: 1px solid #E6E8EB;
 }
+
 html.dark .comment-container-box {
   border-color: transparent;
   background: var(--custom-trend-header-bg-color);
 }
+
 @media screen and (max-width: 768px) {
   .comment-container-box {
     padding: 15px 10px 0;
   }
+
   .comments .comment[data-v-cfc11ff5] {
     padding-bottom: 12px;
   }
@@ -245,18 +255,21 @@ html.dark .comment-container-box {
   align-items: center;
 }
 
-.header-right > div:not(:last-child) {
+.header-right>div:not(:last-child) {
   margin-right: 18px;
 }
 
-.header-left > li:not(:last-child) {
+.header-left>li:not(:last-child) {
   margin-right: 8px;
 }
 
-.create-time, .header-right {
+.create-time,
+.header-right {
   color: #bcc3ce;
 }
-html.dark .create-time, html.dark .header-right{
+
+html.dark .create-time,
+html.dark .header-right {
   color: #8f959f;
 }
 
@@ -268,7 +281,7 @@ html.dark .create-time, html.dark .header-right{
   text-align: justify;
   font-size: 15px;
   line-height: 1.6;
-  font-family: ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
 }
 
 .comments .comment:not(:first-child) {
@@ -282,6 +295,7 @@ html.dark .create-time, html.dark .header-right{
 .comments .comment:not(:last-child) {
   border-bottom: 1px solid #eaeaea;
 }
+
 html.dark .comments .comment:not(:last-child) {
   border-color: var(--custom-trend-td-bottom-color);
 }
@@ -302,24 +316,32 @@ html.dark .comments .comment:not(:last-child) {
   justify-content: space-between;
 }
 
-.d-1, .d-2 {
+.d-1,
+.d-2 {
   height: 24px;
   border-left: 3px;
   border-color: #C0C4CC;
 }
+
 .d-1 {
   border-style: inset;
   margin: 0 0 0 47px;
 }
+
 .d-2 {
   border-style: outset;
   margin: 0 47px 0 0;
 }
-html.dark .d-1, html.dark .d-2 {
+
+html.dark .d-1,
+html.dark .d-2 {
   border-color: #606266;
 }
+
 @media screen and (max-width: 768px) {
-  .d-1, .d-2 {
+
+  .d-1,
+  .d-2 {
     height: 10px;
   }
 }
@@ -336,18 +358,20 @@ html.dark .d-1, html.dark .d-2 {
   align-items: center;
 }
 
-.comment-actions > div:not(:last-child) {
+.comment-actions>div:not(:last-child) {
   margin-right: 8px;
 }
 
 @media screen and (max-width: 768px) {
-  .header-right > div:not(:last-child) {
+  .header-right>div:not(:last-child) {
     margin-right: 10px;
   }
+
   .comment-content-body {
     padding: 10px 0 0;
     margin-left: -35px;
   }
+
   .report-comment {
     cursor: pointer;
     display: inline-block;
@@ -366,14 +390,13 @@ html.dark .d-1, html.dark .d-2 {
   color: #2f4f4f;
   text-decoration: unset;
 }
+
 html.dark .author-name {
   color: #f5f5f5;
 }
 </style>
 
 <style>
-
-
 .comment-content-body .u-fold {
   line-height: 1.6 !important;
 }

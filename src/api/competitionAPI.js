@@ -34,3 +34,16 @@ export function getCompetitionInfoAPI(competitionId) {
         method: 'get'
     })
 }
+
+export function viewCompetitionAPI(competitionId) {
+    return request({
+        url: 'viewCompetition',
+        headers: {
+            requireToken: true
+        },
+        params: {
+            cid: competitionId
+        },
+        method: 'put'
+    })
+}

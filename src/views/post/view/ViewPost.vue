@@ -18,85 +18,88 @@
               <div class="post-container-header">
                 <div class="post-title" v-text="post.title"></div>
                 <div class="title-sub">
-                  <router-link :to="{path: '/u/' + author.name}" class="hidden-sm-and-up">
-                    <el-avatar size="small" :src="author.avatar" shape="square" style="margin-right: 5px;"/>
+                  <router-link :to="{ path: '/u/' + author.name }" class="hidden-sm-and-up">
+                    <el-avatar size="small" :src="author.avatar" shape="square" style="margin-right: 5px;" />
                   </router-link>
                   <ul class="post-attach">
-                      <li>
-                        <router-link :to="{path: '/u/' + author.name}" class="author-link">
-                          <div class="post-attach-icon hidden-xs-only"><i class="czs-forum"/></div>
-                          <span v-if="author.nickname" v-text="author.nickname"/>
-                          <span v-else v-text="author.name"/>
-                        </router-link>
-                      </li>
-                      <li>
-                        <div class="post-attach-icon"><i class="czs-time"/></div>
-                        <el-tooltip :content="post.createTime.toString()" placement="bottom" :show-after="600">
-                          <span v-text="moment(post.createTime).fromNow()"/>
-                        </el-tooltip>
-                      </li>
-                      <li>
-                        <div class="post-attach-icon"><i class="czs-heart"/></div>
-                        <span v-text="'0'"/>
-                      </li>
-                      <li>
-                        <div class="post-attach-icon" style="margin-top: 1.4px;"><i class="czs-eye" style="font-size: 18px;"/></div>
-                        <span v-text="post.viewNumber"/>
-                      </li>
-                    </ul>
+                    <li>
+                      <router-link :to="{ path: '/u/' + author.name }" class="author-link">
+                        <div class="post-attach-icon hidden-xs-only"><i class="czs-forum" /></div>
+                        <span v-if="author.nickname" v-text="author.nickname" />
+                        <span v-else v-text="author.name" />
+                      </router-link>
+                    </li>
+                    <li>
+                      <div class="post-attach-icon"><i class="czs-time" /></div>
+                      <el-tooltip :content="post.createTime.toString()" placement="bottom" :show-after="600">
+                        <span v-text="moment(post.createTime).fromNow()" />
+                      </el-tooltip>
+                    </li>
+                    <li>
+                      <div class="post-attach-icon"><i class="czs-heart" /></div>
+                      <span v-text="likeNumber" />
+                    </li>
+                    <li>
+                      <div class="post-attach-icon" style="margin-top: 1.4px;"><i class="czs-eye"
+                          style="font-size: 18px;" /></div>
+                      <span v-text="post.viewNumber" />
+                    </li>
+                  </ul>
                   <div class="post-tags hidden-xs-only">
-                    <el-tag v-for="(tag, index) of post.tags" size="small" class="post-tag" :type="randomTagType(index)">
-                      <router-link :to="{path: '/t/' + tag.label}" class="post-tag-link">
+                    <el-tag v-for="(tag, index) of post.tags" size="small" class="post-tag"
+                      :type="randomTagType(index)">
+                      <router-link :to="{ path: '/t/' + tag.label }" class="post-tag-link">
                         {{ tag.name }}
                       </router-link>
                     </el-tag>
                   </div>
                 </div>
-                <el-divider border-style="dashed" style="margin: 0 0 12px"/>
+                <el-divider border-style="dashed" style="margin: 0 0 12px" />
               </div>
             </template>
           </el-skeleton>
-          <el-skeleton :loading="loading" animated v-if="loading"  class="post-content-skeleton">
+          <el-skeleton :loading="loading" animated v-if="loading" class="post-content-skeleton">
             <el-skeleton-item variant="text"></el-skeleton-item>
           </el-skeleton>
           <div class="post-container-body" v-show="!loading">
-            <div id="content"/>
+            <div id="content" />
             <div class="post-tags hidden-sm-and-up" style="margin-top: 10px;">
               <el-tag v-for="(tag, index) of post.tags" size="small" class="post-tag" :type="randomTagType(index)">
-                <router-link :to="{path: '/t/' + tag.label}" class="post-tag-link">
+                <router-link :to="{ path: '/t/' + tag.label }" class="post-tag-link">
                   {{ tag.name }}
                 </router-link>
               </el-tag>
             </div>
           </div>
           <div class="post-container-footer" v-if="!loading">
-            <Operations :post="post" @change-content="changeContent" @change-title="changeTitle" @change-tags="changePostTags"/>
+            <Operations :post="post" @change-content="changeContent" @change-title="changeTitle"
+              @change-tags="changePostTags" />
           </div>
         </div>
 
         <div v-if="!loading && !loadingError" class="divider">
-          <el-divider class="d-1" direction="vertical"/>
-          <el-divider class="d-2" direction="vertical"/>
+          <el-divider class="d-1" direction="vertical" />
+          <el-divider class="d-2" direction="vertical" />
         </div>
 
         <Comments v-if="!loading && !loadingError" :pid="props.pid" :reply-num="Number(post.replyNumber)"
-                  :author-id="author.uid.toString()" @update-comment-num="updateCommentNum"/>
+          :author-id="author.uid.toString()" @update-comment-num="updateCommentNum" />
       </el-main>
 
       <el-aside width="230px" class="hidden-sm-and-down test" style="margin-left: 20px">
-        <PostAuthorAside :author="author" :post-loading="loading"/>
+        <PostAuthorAside :author="author" :post-loading="loading" />
         <div style="height: 15px"></div>
-        <HotTagAside/>
+        <HotTagAside />
         <div style="height: 15px"></div>
-        <CountdownAside/>
+        <CountdownAside />
       </el-aside>
     </el-container>
   </div>
 </template>
 
 <script setup lang="ts">
-import {defineProps, onBeforeMount, reactive, ref, watch} from "vue";
-import {getPostInfoAPI} from '../../../api/postAPI'
+import { defineProps, onBeforeMount, onMounted, reactive, ref, watch } from "vue";
+import { getPostInfoAPI, getPostLikeAPI, viewPostAPI } from '../../../api/postAPI'
 import 'vditor/dist/index.css';
 import useUserStore from '../../../stores/userStore';
 import Operations from "../../../components/post/Operations.vue";
@@ -136,6 +139,7 @@ const author = reactive({
 })
 const loading = ref(false)
 const loadingError = ref(false)
+const likeNumber = ref(0)
 
 const hljsTheme = ref();
 const contentTheme = ref();
@@ -143,7 +147,22 @@ onBeforeMount(() => {
   let localStorageTheme = localStorage.getItem('vueuse-color-scheme');
   hljsTheme.value = localStorageTheme === 'dark' ? 'native' : 'emacs';
   contentTheme.value = localStorageTheme === 'dark' ? 'dark' : 'light';
+  viewPost();
 })
+
+onMounted(() => {
+  getLikeNumber();
+})
+
+const getLikeNumber = async () => {
+  const res = await getPostLikeAPI(props.pid);
+  likeNumber.value = res.data.like;
+}
+
+const viewPost = async () => {
+  await viewPostAPI(props.pid);
+}
+
 watch(() => themeStore.currentTheme, (New, Old) => {
   if (New === 'dark') {
     hljsTheme.value = 'native';
@@ -283,14 +302,17 @@ function randomTagType(index) {
   border-radius: var(--custom-border-radius);
   border: 1px solid #E6E8EB;
 }
+
 html.dark .post-container-box {
   background: var(--custom-trend-header-bg-color);
   border-color: transparent;
 }
+
 @media screen and (max-width: 768px) {
   .post-container-box {
     padding: 8px 10px 12px;
   }
+
   .post-container-body {
     padding-bottom: 15px !important;
     padding-top: 0 !important;
@@ -311,9 +333,11 @@ html.dark .post-container-box {
   padding-bottom: 6px;
   text-align: justify;
 }
+
 html.dark .post-title {
   color: #E4E7ED;
 }
+
 @media screen and (max-width: 768px) {
   .post-title {
     font-size: 1.5rem;
@@ -329,6 +353,7 @@ html.dark .post-title {
   font-size: 16px;
   padding-left: 1px;
 }
+
 html.dark .post-attach {
   color: #8f959f;
 }
@@ -338,9 +363,11 @@ html.dark .post-attach {
   margin-top: 8px;
   margin-bottom: 8px;
 }
+
 .post-attach-skeleton {
   height: 18px;
 }
+
 .post-content-skeleton {
   padding-top: 14px;
 }
@@ -362,7 +389,7 @@ html.dark .post-attach {
 #content {
   text-align: justify;
   font-size: 15px;
-  font-family: ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
 }
 
 .divider {
@@ -370,24 +397,32 @@ html.dark .post-attach {
   justify-content: space-between;
 }
 
-.d-1, .d-2 {
+.d-1,
+.d-2 {
   height: 24px;
   border-left: 3px;
   border-color: #C0C4CC;
 }
+
 .d-1 {
   border-style: inset;
   margin: 0 0 0 47px;
 }
+
 .d-2 {
   border-style: outset;
   margin: 0 47px 0 0;
 }
-html.dark .d-1, html.dark .d-2 {
+
+html.dark .d-1,
+html.dark .d-2 {
   border-color: #606266;
 }
+
 @media screen and (max-width: 768px) {
-  .d-1, .d-2 {
+
+  .d-1,
+  .d-2 {
     height: 10px;
   }
 }
@@ -395,7 +430,8 @@ html.dark .d-1, html.dark .d-2 {
 .post-tags {
   margin-top: -1px;
 }
-.post-tags > .post-tag:not(:last-child) {
+
+.post-tags>.post-tag:not(:last-child) {
   margin-right: 5px;
 }
 
@@ -414,6 +450,7 @@ html.dark .d-1, html.dark .d-2 {
     justify-content: unset;
     margin-bottom: 6px;
   }
+
   .post-attach li:not(:last-child) {
     margin-right: 15px;
   }
@@ -424,15 +461,18 @@ html.dark .d-1, html.dark .d-2 {
   display: flex;
   text-decoration: unset;
 }
+
 html.dark .author-link {
   color: #8f959f;
 }
 </style>
 
 <style>
-html.dark .vditor-reset h1, html.dark .vditor-reset h2 {
+html.dark .vditor-reset h1,
+html.dark .vditor-reset h2 {
   border-bottom: 1px solid var(--el-bg-color);
 }
+
 html.dark .vditor-reset blockquote {
   border-left-color: #606266;
 }
@@ -445,7 +485,7 @@ html.dark .post-container-body .vditor-reset .language-flowchart {
   border-radius: 3px;
 }
 
-.language-echarts > div:first-child {
+.language-echarts>div:first-child {
   margin-top: 18px !important;
   margin-left: 25px !important;
 }
@@ -455,16 +495,16 @@ html.dark .post-container-body .vditor-reset .language-flowchart {
   margin-top: 20px;
 }
 
-.post-container-body .vditor-reset > h1:first-child,
-.post-container-body .vditor-reset > h2:first-child,
-.post-container-body .vditor-reset > h3:first-child,
-.post-container-body .vditor-reset > h4:first-child,
-.post-container-body .vditor-reset > h5:first-child,
-.post-container-body .vditor-reset > h6:first-child {
+.post-container-body .vditor-reset>h1:first-child,
+.post-container-body .vditor-reset>h2:first-child,
+.post-container-body .vditor-reset>h3:first-child,
+.post-container-body .vditor-reset>h4:first-child,
+.post-container-body .vditor-reset>h5:first-child,
+.post-container-body .vditor-reset>h6:first-child {
   margin-top: 0;
 }
 
-.post-container-body .vditor-reset > pre {
+.post-container-body .vditor-reset>pre {
   margin-top: 0;
 }
 </style>
