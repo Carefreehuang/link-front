@@ -28,7 +28,7 @@
       </el-menu-item>
       <el-menu-item :index="systemCtrlURI + '/category'">
         <el-icon><Guide /></el-icon>
-        <template #title>赛事分类</template>
+        <template #title>赛事分类管理</template>
       </el-menu-item>
       <el-menu-item :index="systemCtrlURI + '/authority'" v-if="false">
         <el-icon><Key /></el-icon>

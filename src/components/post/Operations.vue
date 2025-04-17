@@ -36,6 +36,11 @@
           <i class="czs-message-l"></i>
         </el-button>
       </el-tooltip>
+      <el-tooltip v-if="canDelete" effect="dark" content="删除帖子" placement="top-start" :show-after="600" trigger="hover">
+        <el-button type="" size="default" circle @click="handleDeletePost">
+          <i class="czs-trash-l"></i>
+        </el-button>
+      </el-tooltip>
     </div>
 
     <div class="more">
@@ -124,7 +129,7 @@
 import { defineProps, getCurrentInstance, nextTick, onBeforeMount, reactive, ref } from "vue";
 import useUserStore from '../../stores/userStore'
 import { ElMessage, ElMessageBox } from "element-plus";
-import { doPostEditedContentAPI, doPostEditedTitleAPI, doChangeTagOfPostAPI, getContactAPI, likePostAPI, isLikePostAPI } from '../../api/postAPI';
+import { doPostEditedContentAPI, doPostEditedTitleAPI, doChangeTagOfPostAPI, getContactAPI, getDeletePostAuthorityAPI, likePostAPI, isLikePostAPI, deletePostAPI } from '../../api/postAPI';
 import useClipboard from "vue-clipboard3";
 import Editor from '../editor/Editor.vue';
 import { hasRole, hasAuthority } from '../../utils/permission';
@@ -135,6 +140,7 @@ import DevelopingDialog from "../layout/dialog/DevelopingDialog.vue";
 import NoVerifyEmailDialog from "../layout/dialog/NoVerifyEmailDialog.vue";
 import ContactDialog from "../layout/dialog/ContactDialog.vue";
 import { isEmailVerified } from '../../utils/permission';
+import router from "../../router";
 
 const userStore = useUserStore();
 
@@ -155,6 +161,52 @@ function handleCommand(command: string | number | object) {
   }
 }
 
+function handleDeletePost() {
+  ElMessageBox.confirm('确定删除该帖子?', '删除确认', {
+    type: 'warning',
+    lockScroll: false,
+  }).then(() => {
+    // 删除帖子逻辑
+    deletePost()
+      .catch((error) => {
+        console.error('删除帖子失败:', error);
+        let errorMessage = '删除帖子失败';
+        if (error && error.message) {
+          errorMessage = error.message;
+        }
+        ElMessage({
+          message: errorMessage,
+          type: 'error',
+        });
+      });
+  });
+}
+
+const canDelete = ref(false) /*是否可以删除帖子*/
+
+const deletePost = async () => {
+  try {
+    const res = await deletePostAPI(props.post.id);
+    if (res.code === 200) {
+      ElMessage({
+        message: res.message,
+        type: 'success',
+      });
+      console.log('帖子删除成功，跳转到主页');
+      router.replace({ path: '/' }).then(() => {
+        // 延迟 500 毫秒后刷新页面，确保路由跳转完成
+        setTimeout(() => {
+          location.reload();
+        }, 500);
+      });
+    } else {
+      throw new Error(res.message);
+    }
+  } catch (error) {
+    throw error;
+  }
+};
+
 const drawerEditor = ref(null);
 const showDrawerEditor = ref(false) /*是否展开抽屉编辑器*/
 const disabledPostEditedContent = ref(false) /*抽屉编辑器内是否禁止发布已编辑的内容*/
@@ -170,7 +222,15 @@ function contentLengthNoExceed() {
 
 onBeforeMount(() => {
   hasLike()
+  getDeletePostAuthority()
 })
+
+const getDeletePostAuthority = async () => {
+  const res = await getDeletePostAuthorityAPI(props.post.id);
+  if (res.code === 200) {
+    canDelete.value = res.data;
+  }
+}
 
 /*判断是否点赞*/
 const isLike = ref(false) /*是否点赞*/

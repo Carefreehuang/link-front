@@ -199,3 +199,29 @@ export function isLikePostAPI(pid) {
         method: 'get'
     })
 }
+
+export function deletePostAPI(pid) {
+    return request({
+        url: '/post',
+        headers: {
+            requireToken: true
+        },
+        params: {
+            pid: pid
+        },
+        method: 'delete'
+    })
+}
+
+export function getDeletePostAuthorityAPI(pid) {
+    return request({
+        url: '/getDeletePostAuthority',
+        headers: {
+            requireToken: true
+        },
+        params: {
+            pid: pid
+        },
+        method: 'get'
+    })
+}

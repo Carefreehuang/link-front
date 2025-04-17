@@ -47,3 +47,39 @@ export function viewCompetitionAPI(competitionId) {
         method: 'put'
     })
 }
+
+export function getCompetitionEditAuthorityAPI(competitionId) {
+    return request({
+        url: '/getCompetitionEditAuthority',
+        headers: {
+            requireToken: true
+        },
+        params: {
+            cid: competitionId
+        },
+        method: 'get'
+    })
+}
+
+export function updateCompetitionAPI(id,competitionName, description, categoryId, officialWebsite, registrationStart, registrationEnd, competitionStart, competitionEnd, competitionImg) {
+    const data = {
+        id,
+        competitionName, 
+        description, 
+        categoryId, 
+        officialWebsite, 
+        registrationStart, 
+        registrationEnd, 
+        competitionStart, 
+        competitionEnd, 
+        competitionImg
+    };
+    return request({
+        url: '/competition',
+        headers: {
+            requireToken: true
+        },
+        data: data,
+        method: 'put'
+    })
+}

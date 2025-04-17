@@ -49,6 +49,8 @@
               </el-tag>
             </div>
           </div>
+          <el-divider border-style="dashed" style="margin: 0 0 12px" />
+          <el-icon size="20px" v-if="canEdit" class="edit" @click="edit"><Edit /></el-icon>
         </div>
 
         <PostList :posts="posts" v-if="!loading" :total-items="totalItems" :total-page="totalPages"
@@ -75,7 +77,7 @@ import HotTagAside from "../../../components/layout/aside/index/HotTagAside.vue"
 import CountdownAside from "../../../components/layout/aside/index/CountdownAside.vue";
 import PostAuthorAside from "../../../components/layout/aside/post/PostAuthorAside.vue";
 import { useRoute, useRouter } from "vue-router";
-import { getCompetitionInfoAPI, viewCompetitionAPI } from "../../../api/competitionAPI";
+import { getCompetitionEditAuthorityAPI, getCompetitionInfoAPI, viewCompetitionAPI } from "../../../api/competitionAPI";
 
 const userStore = useUserStore();
 const themeStore = useThemeStore();
@@ -142,6 +144,7 @@ onBeforeMount(() => {
   let localStorageTheme = localStorage.getItem('vueuse-color-scheme');
   hljsTheme.value = localStorageTheme === 'dark' ? 'native' : 'emacs';
   contentTheme.value = localStorageTheme === 'dark' ? 'dark' : 'light';
+  getEditAuthority();
 })
 watch(() => themeStore.currentTheme, (New, Old) => {
   if (New === 'dark') {
@@ -157,6 +160,20 @@ watch(() => themeStore.currentTheme, (New, Old) => {
   }
 })
 
+const canEdit = ref(false);
+
+function edit() {
+  router.replace({ path: '/cEdit/' + props.pid })
+}
+
+const getEditAuthority = async () => {
+  const res = await getCompetitionEditAuthorityAPI(props.pid);
+  if (res.code === 200) {
+    canEdit.value = res.data;
+  } else {
+    canEdit.value = false;
+  }
+}
 const getPostsByCompetitionId = async () => {
   const res = await getPostsByCompetitionAPI(props.pid, currentPage.value);
   posts.value = res.data.posts;
@@ -350,6 +367,10 @@ function randomTagType(index) {
 </script>
 
 <style scoped>
+.edit {
+  cursor: pointer;
+}
+
 .post-container-main {
   padding: 0;
 }

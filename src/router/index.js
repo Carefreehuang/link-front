@@ -120,7 +120,7 @@ const router = createRouter({
                 {
                     path: 'category', name: 'adminCategory',
                     components: {sysMain: () => import('../views/tabs/admin/AdminCategory.vue')},
-                    meta: {title: '管理中心 - 赛事分类 - ' + global_title}
+                    meta: {title: '管理中心 - 赛事分类管理 - ' + global_title}
                 },
                 {
                     path: 'authority', name: 'adminAuthority',
@@ -169,6 +169,15 @@ const router = createRouter({
             name: 'ViewCompetition',
             components: {
                 default: () => import('../views/competition/view/ViewCompetition.vue'),
+            },
+            props: {default: true},
+            meta: {title: global_title}
+        },
+        {
+            path: '/cEdit/:pid(\\d+)',
+            name: 'EditCompetition',
+            components: {
+                default: () => import('../views/competition/release/EditCompetition.vue'),
             },
             props: {default: true},
             meta: {title: global_title}

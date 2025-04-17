@@ -1,12 +1,12 @@
 <template>
-  <div id="vditor"/>
+  <div id="vditor" />
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, onBeforeMount, watch} from 'vue';
+import { ref, onMounted, onBeforeMount, watch } from 'vue';
 import Vditor from 'vditor';
 import 'vditor/dist/index.css';
-import {ElMessage} from "element-plus";
+import { ElMessage } from "element-plus";
 import useThemeStore from '../../stores/themeStore';
 
 const themeStore = useThemeStore();
@@ -140,9 +140,14 @@ watch(() => props.clearContent, (New, Old) => {
 
 const emits = defineEmits(['contentLengthExceed', 'contentLengthNoExceed', 'clearContentDone'])
 
+const setValue = (val: string) => {
+  editor.value?.setValue(val);
+};
+
 defineExpose({
-  editor
+  editor, setValue
 });
+
 
 onMounted(() => {
   editor.value = new Vditor('vditor', {
@@ -242,14 +247,14 @@ onMounted(() => {
             message: response.message,
             type: 'success',
           })
-        } catch(error) {
+        } catch (error) {
           console.error('解析服务器响应出错:', error);
           ElMessage({
             showClose: true,
             duration: 3000,
             message: '解析服务器响应出错',
             type: 'error',
-          });          
+          });
         }
       },
       error: (msg: string) => {
@@ -261,33 +266,38 @@ onMounted(() => {
             message: response.message,
             type: 'error',
           })
-        } catch(error) {
+        } catch (error) {
           console.error('解析服务器响应出错:', error);
           ElMessage({
             showClose: true,
             duration: 3000,
             message: '解析服务器响应出错',
             type: 'error',
-          });          
+          });
         }
       }
-    },   
+    },
     after: () => {
       editor.value!.setValue(editor.value.html2md(props.editingContent)); /*编辑器默认占位符*/
     },
+    // after: () => {
+    //   editor.value?.setValue(props.editingContent);
+    // }
   });
 });
+
 </script>
 
 <style>
 html.dark .vditor-reset {
   color: var(--custom-text-color);
 }
+
 html.dark .vditor-resize svg {
   color: white;
 }
 
-.vditor-resize > div {
+.vditor-resize>div {
   transition: unset;
 }
 
@@ -295,7 +305,8 @@ html.dark .vditor-resize svg {
   .vditor-toolbar {
     padding-left: 6px !important;
   }
-  .vditor-toolbar > .vditor-toolbar__item:first-child {
+
+  .vditor-toolbar>.vditor-toolbar__item:first-child {
     padding-left: 0;
   }
 }

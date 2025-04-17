@@ -85,14 +85,6 @@
         <Comments v-if="!loading && !loadingError" :pid="props.pid" :reply-num="Number(post.replyNumber)"
           :author-id="author.uid.toString()" @update-comment-num="updateCommentNum" />
       </el-main>
-
-      <el-aside width="230px" class="hidden-sm-and-down test" style="margin-left: 20px">
-        <PostAuthorAside :author="author" :post-loading="loading" />
-        <div style="height: 15px"></div>
-        <HotTagAside />
-        <div style="height: 15px"></div>
-        <CountdownAside />
-      </el-aside>
     </el-container>
   </div>
 </template>
