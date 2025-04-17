@@ -36,6 +36,12 @@
           <i class="czs-message-l"></i>
         </el-button>
       </el-tooltip>
+
+      <el-tooltip v-if="props.post.competitionId" effect="dark" content="查看相关比赛" placement="top-start" :show-after="600" trigger="hover">
+        <el-button type="" size="default" circle @click="gotoCompetition">
+          <i class="czs-link-l"></i>
+        </el-button>
+      </el-tooltip>
       <el-tooltip v-if="canDelete" effect="dark" content="删除帖子" placement="top-start" :show-after="600" trigger="hover">
         <el-button type="" size="default" circle @click="handleDeletePost">
           <i class="czs-trash-l"></i>
@@ -179,6 +185,15 @@ function handleDeletePost() {
           type: 'error',
         });
       });
+  });
+}
+
+function gotoCompetition() {
+  router.replace({path: '/c'+'/'+props.post.competitionId}).then(() => {
+    // 延迟 500 毫秒后刷新页面，确保路由跳转完成
+    setTimeout(() => {
+      location.reload();
+    }, 500);
   });
 }
 

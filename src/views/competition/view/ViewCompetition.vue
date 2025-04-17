@@ -31,6 +31,21 @@
                     </li>
                   </ul>
                 </div>
+                <div class="time-and-button-container">
+                  <el-button v-if="competition.officialWebsite" @click="goToOfficialWebsite">点击前往官网报名</el-button>
+                  <div class="time-info-container">
+                    <div class="time-item">
+                      <span class="time-title">报名时间：</span>
+                      <span class="time-detail">{{ formatTime(competition.registrationStart) }} ~ {{
+                        formatTime(competition.registrationEnd) }}</span>
+                    </div>
+                    <div class="time-item">
+                      <span class="time-title">比赛时间：</span>
+                      <span class="time-detail">{{ formatTime(competition.competitionStart) }} ~ {{
+                        formatTime(competition.competitionEnd) }}</span>
+                    </div>
+                  </div>
+                </div>
                 <el-divider border-style="dashed" style="margin: 0 0 12px" />
               </div>
             </template>
@@ -50,7 +65,9 @@
             </div>
           </div>
           <el-divider border-style="dashed" style="margin: 0 0 12px" />
-          <el-icon size="20px" v-if="canEdit" class="edit" @click="edit"><Edit /></el-icon>
+          <el-icon size="20px" v-if="canEdit" class="edit" @click="edit">
+            <Edit />
+          </el-icon>
         </div>
 
         <PostList :posts="posts" v-if="!loading" :total-items="totalItems" :total-page="totalPages"
@@ -300,7 +317,7 @@ function getPostList(competitionId) {
 }
 
 
-const getCompetitionInfo = async() => {
+const getCompetitionInfo = async () => {
   loading.value = true;
   const res = await getCompetitionInfoAPI(props.pid);
   if (res.code === 200) {
@@ -363,6 +380,17 @@ function randomTagType(index) {
     case 3: return 'info';
     default: return 'danger';
   }
+}
+
+// 新增：格式化时间函数
+const formatTime = (time) => {
+  return moment(time).format('YYYY-MM-DD');
+}
+
+// 新增：跳转官网函数
+const goToOfficialWebsite = () => {
+  window.open(competition.officialWebsite, '_blank');
+  ``
 }
 </script>
 
@@ -548,6 +576,38 @@ html.dark .d-2 {
 
 html.dark .author-link {
   color: #8f959f;
+}
+
+/* 新增：时间和按钮容器样式 */
+.time-and-button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 新增：时间信息容器样式 */
+.time-info-container {
+  text-align: right;
+}
+
+/* 新增：时间项样式 */
+.time-item {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* 新增：时间标题样式 */
+.time-title {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-right: 5px;
+  color: #888
+}
+
+/* 新增：时间详情样式 */
+.time-detail {
+  font-size: 0.9em;
+  color: #b5b0b0;
 }
 </style>
 

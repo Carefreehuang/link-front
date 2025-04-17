@@ -57,7 +57,7 @@
                        :current-page="props.currentPage"
                        @update:current-page="changeCurrentPage"/>
 
-        <el-empty description="还没有主题" v-if="props.posts && props.posts.length === 0"/>
+        <el-empty description="还没有帖子" v-if="props.posts && props.posts.length === 0"/>
         <el-empty description="没有更多了" v-if="props.posts && props.posts.length < 20 && props.posts.length > 0"/>
       </template>
     </el-skeleton>

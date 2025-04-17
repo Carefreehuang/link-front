@@ -4,7 +4,8 @@
         <el-col :span="6">
             <el-menu :default-active="activeCategory" mode="vertical" class="category-menu">
                 <div class="menu-title">赛事分类</div>
-                <el-menu-item v-for="category in categories" :key="category.id" :index="category.id.toString()" @click="activeCategory = category.id">
+                <el-menu-item v-for="category in categories" :key="category.id" :index="category.id.toString()"
+                    @click="activeCategory = category.id">
                     <i class="el-icon-folder-opened"></i>
                     <span>{{ category.name }}</span>
                 </el-menu-item>
@@ -119,27 +120,29 @@ onBeforeMount(() => {
 
 .menu-title {
     padding: 16px;
-    font-size: 16px; 
+    font-size: 16px;
     font-weight: bold;
     color: #333;
     border-bottom: 1px solid #eee;
-    text-align: left; /* 让标题文字左对齐 */
+    text-align: left;
+    /* 让标题文字左对齐 */
 }
 
 .category-menu .el-menu-item {
-    padding: 0 20px; 
-    line-height: 30px; 
-    text-align: left; /* 让菜单项文字左对齐 */
+    padding: 0 20px;
+    line-height: 30px;
+    text-align: left;
+    /* 让菜单项文字左对齐 */
 }
 
 .category-menu .el-menu-item i {
-    margin-right: 10px; 
+    margin-right: 10px;
 }
 
 .competition-card {
     margin-left: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgb(255, 255, 255);
     background-color: #fff;
 }
 
@@ -161,4 +164,40 @@ onBeforeMount(() => {
     margin-top: 20px;
     text-align: right;
 }
+.competition-table {
+    background-color: #ffffff;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #333;
+}
+
+.competition-table .el-table__header,
+.competition-table .el-table__body {
+    background-color: #ffffff;
+}
+
+.competition-table .el-table__header th {
+    background-color: #f9f9f9;
+    color: #666;
+    font-weight: 500;
+    border-bottom: 1px solid #ebeef5;
+}
+
+.competition-table .el-table__row {
+    transition: background-color 0.3s ease;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.competition-table .el-table__row:hover {
+    background-color: #f8f8f8;
+}
+
+.competition-table .cell {
+    padding: 12px 8px;
+}
+
+.el-table::before {
+    height: 0 !important; /* 去掉表格顶部边框 */
+}
+
 </style>

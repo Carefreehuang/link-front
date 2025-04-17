@@ -120,6 +120,7 @@ const post = reactive({
   createTime: String,
   replyNumber: Number,
   viewNumber: Number,
+  competitionId: String,
 })
 const author = reactive({
   id: Number,
@@ -213,6 +214,7 @@ function getPostInfo(pid: String) {
         post.createTime = responseData.post.createTime;
         post.replyNumber = responseData.post.replyNumber;
         post.viewNumber = responseData.post.viewNumber;
+        post.competitionId = responseData.post.competitionId;
 
         author.id = responseData.id;
         author.uid = responseData.uid;
