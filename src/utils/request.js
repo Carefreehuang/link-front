@@ -11,7 +11,8 @@ axios.defaults.withCredentials = false;
 
 const instance = axios.create({
     baseURL: import.meta.env.VITE_AXIOS_BASEURL,
-    timeout: import.meta.env.VITE_AXIOS_TIMEOUT,
+    // timeout: import.meta.env.VITE_AXIOS_TIMEOUT,
+    timeout: 1000000,
 })
 
 //请求拦截器

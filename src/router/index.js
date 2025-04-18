@@ -59,6 +59,16 @@ const router = createRouter({
             ]
         },
         {
+            path: '/ai',
+            children: [
+                {
+                    path: '', name: 'ai',
+                    components: {default: () => import('../views/ai/Ai.vue')},
+                    meta: {title: "AI - " + global_title, mainTransition: '', bodyTransition: ''},
+                },
+            ]    
+        },
+        {
             path: '/t/:tagLabel',
             components: {default: () => import('../views/tag/Tag.vue')},
             props: {default: true},

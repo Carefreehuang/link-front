@@ -10,6 +10,7 @@ const useTabStore = defineStore("tab", {
             { name: "热门帖子", path: tabPrefix + "hot",icon: "czs-people" },
             { name: "标签分类", path: '/tags', icon: "czs-block-l" },
             { name: "赛事列表", path: '/competitions', icon: "czs-medal-l" },
+            { name: "AI助手", path: '/ai', icon: "czs-robot-l" },
         ],
         menuTabs: [
             { name: "标签", path: '/tags', icon: "czs-block-l" },
