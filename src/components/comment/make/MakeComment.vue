@@ -2,32 +2,33 @@
   <div class="comment-now" :style="props.replyNum === 0 ? 'margin: 0 1px 2px' : '10px 0 3px'">
     <el-avatar :src="userStore.avatar" shape="square" style="margin-right: 10px;"></el-avatar>
     <el-input ref="commentInputRef" size="large" :placeholder="props.replyNum === 0 ? '还没有评论，快发表第一条评论吧' : '发表评论'"
-              @focus="openDrawerEditor"/>
+      @focus="openDrawerEditor" />
   </div>
 
   <el-drawer v-model="showDrawerEditor" class="drawer-editor" title="评论主题" destroy-on-close size="fit-content"
-             :lock-scroll="false" :direction="'btt'" :before-close="handleCloseDrawerEditor">
-    <Editor height="25vh" ref="editorRef" cache-id="comment" @content-length-exceed="contentLengthExceed" class="comment-vditor"
-            @content-length-no-exceed="contentLengthNoExceed" :counter-max="10240"/>
+    :lock-scroll="false" :direction="'btt'" :before-close="handleCloseDrawerEditor">
+    <Editor height="25vh" ref="editorRef" cache-id="comment" @content-length-exceed="contentLengthExceed"
+      class="comment-vditor" @content-length-no-exceed="contentLengthNoExceed" :counter-max="10240" />
     <template #footer>
       <div>
         <el-button color="#626aef" plain @click="handleCloseDrawerEditor">取消评论</el-button>
         <el-button color="#626aef" plain :loading="commentLoading" @click="doComment"
-                   :disabled="disabledButton">确认评论</el-button>
+          :disabled="disabledButton">确认评论</el-button>
       </div>
     </template>
   </el-drawer>
 
-  <NoLoginDialog :show-no-login-dialog="showNoLoginDialog" @closeNoLoginDialog="handleCloseNoLoginDialog"/>
-  <NoVerifyEmailDialog :show-no-verify-email-dialog="showNoVerifyEmailDialog" @closeNoVerifyEmailDialog="handleCloseNoVerifyEmailDialog"/>
+  <NoLoginDialog :show-no-login-dialog="showNoLoginDialog" @closeNoLoginDialog="handleCloseNoLoginDialog" />
+  <NoVerifyEmailDialog :show-no-verify-email-dialog="showNoVerifyEmailDialog"
+    @closeNoVerifyEmailDialog="handleCloseNoVerifyEmailDialog" />
 </template>
 
 <script setup lang="ts">
 import useUserStore from "../../../stores/userStore";
-import {defineProps, getCurrentInstance, ref} from "vue";
-import {ElMessage, ElMessageBox} from "element-plus";
+import { defineProps, getCurrentInstance, ref } from "vue";
+import { ElMessage, ElMessageBox } from "element-plus";
 import Editor from '../../editor/Editor.vue';
-import {doCommentAPI} from '../../../api/commentAPI'
+import { doCommentAPI } from '../../../api/commentAPI'
 import dayjs from "dayjs";
 import NoLoginDialog from "../../layout/dialog/NoLoginDialog.vue";
 import NoVerifyEmailDialog from "../../layout/dialog/NoVerifyEmailDialog.vue";
@@ -63,16 +64,17 @@ const commentLoading = ref(false) /*抽屉编辑器内正在发布已编辑的�
 const currentInstance = getCurrentInstance();
 
 function handleCloseDrawerEditor() {
-  ElMessageBox.confirm(
-      '确定取消评论?',
-      '关闭确认',
-      {
-        lockScroll: false
-      }
-  ).then(() => {
-        showDrawerEditor.value = false;
-      })
-      .catch(() => {})
+  // ElMessageBox.confirm(
+  //     '确定取消评论?',
+  //     '关闭确认',
+  //     {
+  //       lockScroll: false
+  //     }
+  // ).then(() => {
+  //       showDrawerEditor.value = false;
+  //     })
+  //     .catch(() => {})
+  showDrawerEditor.value = false;
 }
 function handleCloseNoLoginDialog() {
   showNoLoginDialog.value = false;
@@ -90,7 +92,7 @@ function contentLengthNoExceed() {
 }
 
 function doComment() {
-  let {editor} = editorRef.value;
+  let { editor } = editorRef.value;
   commentLoading.value = true;
   if (editor.getValue().trim().length <= 0) {
     commentLoading.value = false;
@@ -113,7 +115,7 @@ function doComment() {
       if (disabledButton.value) return;
       doCommentAPI(props.pid, userStore.uid, editor.getHTML()).then(response => {
         emits('insertNewComment', response.data.comment.id, userStore.avatar, userStore.nickname,
-            userStore.username, response.data.comment.content, dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss'));
+          userStore.username, response.data.comment.content, dayjs(new Date()).format('YYYY-MM-DD HH:mm:ss'));
         showDrawerEditor.value = false;
         console.log(response)
       }).catch(error => {
@@ -150,10 +152,12 @@ function doComment() {
   border-radius: var(--custom-border-radius);
   border: 1px solid #E6E8EB;
 }
+
 html.dark .comment-now {
   border-color: transparent;
   background: var(--custom-trend-header-bg-color);
 }
+
 @media screen and (max-width: 768px) {
   .comment-now {
     padding: 13px 10px;
@@ -167,7 +171,8 @@ html.dark .comment-now {
 
 <style>
 .post-container .el-overlay {
-  overflow: visible !important; /*默认的hidden大概率会导致抽屉抖动出现*/
+  overflow: visible !important;
+  /*默认的hidden大概率会导致抽屉抖动出现*/
 }
 
 .drawer-editor .el-drawer__footer {
@@ -202,7 +207,8 @@ html.dark .comment-now {
     width: 76% !important;
     margin-left: 12%;
     margin-right: 12%;
-    border-radius: var(--custom-border-radius) var(--custom-border-radius) 0 0;;
+    border-radius: var(--custom-border-radius) var(--custom-border-radius) 0 0;
+    ;
   }
 }
 
@@ -211,7 +217,8 @@ html.dark .comment-now {
     width: 58% !important;
     margin-left: 21%;
     margin-right: 21%;
-    border-radius: var(--custom-border-radius) var(--custom-border-radius) 0 0;;
+    border-radius: var(--custom-border-radius) var(--custom-border-radius) 0 0;
+    ;
   }
 }
 
@@ -219,6 +226,7 @@ html.dark .comment-now {
   box-shadow: 0 0 0 1px #eaeaea inset;
   transition: unset;
 }
+
 .comment-now .el-input__wrapper:hover {
   box-shadow: 0 0 0 1px #d0d7de inset;
 }
@@ -226,6 +234,7 @@ html.dark .comment-now {
 html.dark .comment-now .el-input__wrapper {
   box-shadow: 0 0 0 1px #333942 inset;
 }
+
 html.dark .comment-now .el-input__wrapper:hover {
   box-shadow: 0 0 0 1px var(--el-input-hover-border-color) inset;
 }

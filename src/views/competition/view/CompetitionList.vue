@@ -7,7 +7,7 @@
                 <el-menu-item v-for="category in categories" :key="category.id" :index="category.id.toString()"
                     @click="activeCategory = category.id">
                     <i class="el-icon-folder-opened"></i>
-                    <span>{{ category.name }}</span>
+                    <span>{{ category.name }} ({{ category.competitionCount }})</span>
                 </el-menu-item>
             </el-menu>
         </el-col>
@@ -19,8 +19,8 @@
                 </template>
                 <el-table :data="paginatedCompetitions" @row-click="handleRowClick" class="competition-table">
                     <el-table-column prop="competitionName" label="赛事名称"></el-table-column>
-                    <el-table-column prop="registrationStart" label="报名开始时间"></el-table-column>
-                    <el-table-column prop="registrationEnd" label="报名截止时间"></el-table-column>
+                    <el-table-column prop="registrationStart" label="报名开始时间" :formatter="formatDate"></el-table-column>
+                    <el-table-column prop="registrationEnd" label="报名截止时间" :formatter="formatDate"></el-table-column>
                 </el-table>
                 <!-- 分页组件 -->
                 <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -73,6 +73,12 @@ const getCategories = async () => {
         const res = await getCategoryAndCompetitionsAPI();
         categories.value = res.data.categories;
         totalCompetitions.value = res.data.competitions;
+
+        // 统计每个分类下的竞赛数量
+        categories.value.forEach(category => {
+            category.competitionCount = totalCompetitions.value.filter(competition => competition.categoryId.toString() === category.id.toString()).length;
+        });
+
         if (categories.value.length > 0) {
             activeCategory.value = categories.value[0].id.toString();
         }
@@ -99,6 +105,11 @@ const handleCurrentChange = (newPage: number) => {
 // 处理表格行点击事件
 const handleRowClick = (row: any) => {
     router.push({ path: `/c/${row.id}` });
+};
+
+// 格式化日期函数
+const formatDate = (row: any, column: any, cellValue: string) => {
+    return cellValue ? new Date(cellValue).toISOString().split('T')[0] : '';
 };
 
 onBeforeMount(() => {
@@ -200,4 +211,4 @@ onBeforeMount(() => {
     height: 0 !important; /* 去掉表格顶部边框 */
 }
 
-</style>
+</style>    

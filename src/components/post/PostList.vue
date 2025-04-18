@@ -71,7 +71,7 @@
 
 <script setup>
 import { useRoute, useRouter } from "vue-router/dist/vue-router";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import moment from "moment";
 
 const router = useRouter();

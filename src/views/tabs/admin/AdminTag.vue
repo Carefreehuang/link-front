@@ -1,7 +1,7 @@
 <template>
   <div class="sys-tag">
     <div class=sys-tag-header>
-      <el-input v-model="tagSearch" class="tag-search" size="large" placeholder="搜索标签" :suffix-icon="Search"/>
+      <!-- <el-input v-model="tagSearch" class="tag-search" size="large" placeholder="搜索标签" :suffix-icon="Search"/> -->
       <el-button v-text="'新建标签'" type="primary" plain @click="showAddTagDialog = !showAddTagDialog"/>
 
       <!-- 添加标签对话框 -->
@@ -408,7 +408,7 @@ function handleUpdateTag(formRef: FormInstance | undefined) {
     formRef.validate((isValid) => {
       if (isValid) {
         updateTagAPI(updateTagForm).then(response => {
-          tags.value = response.data.tags;
+          tags.value = response.data;
           ElMessage({
             message: '更新成功',
             type: 'success',
@@ -530,8 +530,8 @@ function updateTagOption(formRef: FormInstance | undefined) {
               type: 'success',
             })
             nextTick(() => {
-              tempTagOption.value.name = response.data.newOption.name;
-              tempTagOption.value.label = response.data.newOption.label;
+              tempTagOption.value.name = response.data.name;
+              tempTagOption.value.label = response.data.label;
             })
             showEditTagOptionDialog.value = false;
             console.log(response)
@@ -569,7 +569,7 @@ function handleDeleteTag() {
   setTimeout(() => {
     deleteTagAPI(updateTagForm).then(response => {
       console.log(response)
-      tags.value = response.data.tags;
+      tags.value = response.data;
       showUpdateTagDialog.value = false;
       ElMessage({
         type: 'success',
@@ -600,7 +600,7 @@ function handleDeleteTag() {
                 setTimeout(() => {
                   forceDeleteTagAPI(updateTagForm).then(resp => {
                     console.log(resp)
-                    tags.value = resp.data.tags;
+                    tags.value = resp.data;
                     showUpdateTagDialog.value = false;
                     done();
                     ElMessage({

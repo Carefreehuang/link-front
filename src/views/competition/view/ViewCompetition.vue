@@ -70,8 +70,8 @@
           </el-icon>
         </div>
 
-        <PostList :posts="posts" v-if="!loading" :total-items="totalItems" :total-page="totalPages"
-          :current-page="currentPage" :size-per-page="sizePerPage" :is-all-post="false" @changePage="changeCurrentPage"
+        <PostList :posts="posts" :total-items="posts.length" :total-page="totalPages"
+          :current-page="currentPage" :size-per-page="sizePerPage" :is-all-post="true" @changePage="changeCurrentPage"
           :loading="loading" />
       </el-main>
 
@@ -93,6 +93,7 @@ import useThemeStore from '../../../stores/themeStore';
 import HotTagAside from "../../../components/layout/aside/index/HotTagAside.vue";
 import CountdownAside from "../../../components/layout/aside/index/CountdownAside.vue";
 import PostAuthorAside from "../../../components/layout/aside/post/PostAuthorAside.vue";
+import PostList from "../../../components/post/PostList.vue";
 import { useRoute, useRouter } from "vue-router";
 import { getCompetitionEditAuthorityAPI, getCompetitionInfoAPI, viewCompetitionAPI } from "../../../api/competitionAPI";
 
@@ -142,6 +143,7 @@ const post = reactive({
   createTime: String,
   replyNumber: Number,
   viewNumber: Number,
+  likeNumber: Number,
 })
 const author = reactive({
   id: Number,
@@ -157,11 +159,13 @@ const loadingError = ref(false)
 const hljsTheme = ref();
 const contentTheme = ref();
 onBeforeMount(() => {
+  getPostsByCompetitionId(currentPage.value);
   getCompetitionInfo(props.pid);
   let localStorageTheme = localStorage.getItem('vueuse-color-scheme');
   hljsTheme.value = localStorageTheme === 'dark' ? 'native' : 'emacs';
   contentTheme.value = localStorageTheme === 'dark' ? 'dark' : 'light';
   getEditAuthority();
+
 })
 watch(() => themeStore.currentTheme, (New, Old) => {
   if (New === 'dark') {
@@ -191,14 +195,15 @@ const getEditAuthority = async () => {
     canEdit.value = false;
   }
 }
-const getPostsByCompetitionId = async () => {
-  const res = await getPostsByCompetitionAPI(props.pid, currentPage.value);
+const getPostsByCompetitionId = async (page) => {
+  loading.value = true;
+  console.log('getPostsByCompetitionId', page)
+  const res = await getPostsByCompetitionAPI(props.pid, page);
   posts.value = res.data.posts;
-
+  loading.value = false;
 }
 
 onMounted(() => {
-  getPostsByCompetitionId();
   viewCompetiton();
 })
 
@@ -227,22 +232,24 @@ const renderMarkdown = (content) => {
   });
 }
 
-function changeCurrentPage(newPage) {
+const changeCurrentPage = async (newPage) => {
+  console.log('changeCurrentPage', newPage)
   currentPage.value = newPage;
-  getTagAndPosts(newPage);
+  getPostsByCompetitionId(currentPage.value);
 
-  if (newPage === 1) {
-    router.push({ path: '/t/' + props.tagLabel })
-  } else {
-    router.push({ path: '/t/' + props.tagLabel, query: { page: newPage } })
-  }
+  router.push({
+    name: 'ViewCompetition', // 假设当前页面路由名为 viewCompetition
+    params: { pid: props.pid },
+    query: { page: newPage }
+  });
 }
 
 function getTagAndPosts(page) {
   loading.value = true;
   setTimeout(() => {
     getTagAPI(props.tagLabel, page).then(response => {
-      posts.value = response.data.posts;
+      //posts.value = response.data.posts;
+      console.log('getTagAndPosts',posts.value)
       tag.value = response.data.tag;
       document.title = tag.value.name + ' - ' + global_title;
       totalItems.value = posts.value.length;
@@ -282,6 +289,7 @@ function getPostInfo(pid: String) {
         post.createTime = responseData.post.createTime;
         post.replyNumber = responseData.post.replyNumber;
         post.viewNumber = responseData.post.viewNumber;
+        post.likeNumber = responseData.post.likeNumber;
 
         author.id = responseData.id;
         author.uid = responseData.uid;
@@ -325,7 +333,7 @@ const getCompetitionInfo = async () => {
     competition.competitionName = res.data.competitionName;
     competition.description = res.data.description;
     competition.categoryId = res.data.categoryId;
-    competition.tag = res.data.tags;
+    //competition.tag = res.data.tags;
     competition.officialWebsite = res.data.officialWebsite;
     competition.registrationStart = res.data.registrationStart;
     competition.registrationEnd = res.data.registrationEnd;

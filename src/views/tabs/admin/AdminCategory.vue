@@ -125,6 +125,7 @@ const handleCreateCategory = async () => {
             })
             categorys.value.push(res.data.newCategory);
             showAddCategoryDialog.value = false;
+            categoryForm.name = '';
         } else {
             ElMessage({
                 message: res.message,

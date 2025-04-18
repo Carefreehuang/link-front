@@ -5,11 +5,11 @@ const tabPrefix = '/n/';
 const useTabStore = defineStore("tab", {
     state: () => ({
         mainTabs: [
-            { name: "全部", path: "/", },
-            { name: "最新", path: tabPrefix + "latest", },
-            { name: "热门", path: tabPrefix + "hot", },
-            { name: "标签", path: '/tags', icon: "czs-block-l" },
-            { name: "赛事", path: '/competitions', icon: "czs-medal-l" },
+            { name: "全部帖子", path: "/", icon: "czs-layout-list" },
+            //{ name: "最新", path: tabPrefix + "latest", },
+            { name: "热门帖子", path: tabPrefix + "hot",icon: "czs-people" },
+            { name: "标签分类", path: '/tags', icon: "czs-block-l" },
+            { name: "赛事列表", path: '/competitions', icon: "czs-medal-l" },
         ],
         menuTabs: [
             { name: "标签", path: '/tags', icon: "czs-block-l" },

@@ -40,12 +40,12 @@
       </el-tabs>
     </el-main>
 
-    <el-aside width="230px" class="hidden-sm-and-down" style="margin-left: 20px">
+    <!-- <el-aside width="230px" class="hidden-sm-and-down" style="margin-left: 20px">
       <StatisticsAside/>
       <div style="height: 15px"></div>
       <CountdownAside/>
       <div style="height: 15px"></div>
-    </el-aside>
+    </el-aside> -->
   </el-container>
 </template>
 

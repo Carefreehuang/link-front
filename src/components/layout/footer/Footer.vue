@@ -8,9 +8,9 @@
         <!-- 页脚模块 -->
         <el-col :xs="23" :sm="23" :md="23" :lg="14" :xl="16">
           <div>
-            <span>© {{new Date().getFullYear()}} Flip Project. All Rights Reserved. </span>
+            <span>© {{new Date().getFullYear()}} Link Project. All Rights Reserved. </span>
             <br class="hidden-sm-and-up"/>
-            <span>Powered by Flip.</span>
+            <span>Powered by Link.</span>
           </div>
         </el-col>
 
