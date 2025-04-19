@@ -43,7 +43,7 @@
                                         <span class="tag-name" v-text="prompt.name" />
                                         <span class="tag-status" v-text="prompt.status == '1' ? '启用' : '禁用'" />
                                     </div>
-                                    <el-button v-text="'编辑'" @click="handleShowUpdatePromptDialog(prompt)" />
+                                    <el-button v-text="'查看'" @click="handleShowUpdatePromptDialog(prompt)" />
                                 </div>
                             </el-card>
                         </td>
@@ -55,7 +55,7 @@
                                         <span class="tag-name" v-text="prompts[index + 1].name" />
                                         <span class="tag-status" v-text="prompts[index + 1].status == '1' ? '启用' : '禁用'" />
                                     </div>
-                                    <el-button v-text="'编辑'"
+                                    <el-button v-text="'查看'"
                                         @click="handleShowUpdatePromptDialog(prompts[index + 1])" />
                                 </div>
                             </el-card>

@@ -23,3 +23,13 @@ export function getChatHistoryAPI() {
         method: 'get'
     })
 }
+
+export function deleteChatHistoryAPI() {
+    return request({
+        url: '/chatHistory',
+        headers: {
+            requireToken: true
+        },
+        method: 'delete'
+    })
+}

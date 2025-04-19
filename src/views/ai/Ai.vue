@@ -1,44 +1,38 @@
 <template>
     <div class="chat-container">
-        <div class="chat-messages">
+        <div class="chat-messages" ref="chatMessagesRef">
             <!-- 当聊天记录为空时显示提示信息 -->
             <div v-if="chatHistory.length === 0" class="no-chat-message">
                 暂时没有对话信息
             </div>
             <div v-else v-for="record in chatHistory" :key="record.recordId"
                 :class="{ 'user-message': record.isUser, 'ai-message': !record.isUser }">
-                <el-avatar v-if="!record.isUser" :src="aiAvatar" size="small" shape="square" class="ai-avatar"/>
+                <el-avatar v-if="!record.isUser" :src="aiAvatar" size="small" shape="square" class="ai-avatar" />
                 <div class="message-box">
                     <p>{{ record.msg }}</p>
                     <span class="message-time">{{ record.createTime }}</span>
                 </div>
-                <el-avatar v-if="record.isUser" :src="userAvatar" size="small" shape="square" class="user-avatar"/>
+                <el-avatar v-if="record.isUser" :src="userAvatar" size="small" shape="square" class="user-avatar" />
             </div>
             <div v-if="loading" class="loading">
                 <el-skeleton animated :rows="1" style="width: 50%; margin: 0 auto;"></el-skeleton>
             </div>
         </div>
         <div class="chat-input">
-            <el-input
-                v-model="message"
-                placeholder="请输入消息"
-                @keyup.enter="chat"
-                type="textarea"
-                :autosize="{ minRows: 2, maxRows: 5 }"
-                show-word-limit
-                maxlength="200"
-            ></el-input>
+            <el-input v-model="message" placeholder="请输入消息" @keyup.enter="chat" type="textarea"
+                :autosize="{ minRows: 2, maxRows: 5 }" show-word-limit maxlength="200"></el-input>
             <el-button :loading="loading" @click="chat" class="send-button">发送</el-button>
             <!-- 添加清空聊天按钮 -->
-            <el-button @click="clearChatHistory" class="clear-button">清空聊天</el-button>
+            <el-button @click="clearChatHistory" class="clear-button">新对话</el-button>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { chatAPI, getChatHistoryAPI } from '../../api/chatAPI';
+import { ref, onMounted, nextTick } from 'vue';
+import { chatAPI, getChatHistoryAPI, deleteChatHistoryAPI } from '../../api/chatAPI';
 import useUserStore from '../../stores/userStore';
+import { ElMessageBox } from 'element-plus';
 
 const userStore = useUserStore();
 const chatHistory = ref([]);
@@ -46,11 +40,15 @@ const message = ref('');
 const loading = ref(false);
 const userAvatar = userStore.avatar; // 替换为用户头像的实际路径
 const aiAvatar = ref('src\\assets\\img\\logo .png'); // 替换为机器人头像的实际路径
+const chatMessagesRef = ref<HTMLElement | null>(null);
 
 const getChatHistory = async () => {
     try {
         const res = await getChatHistoryAPI();
         chatHistory.value = res.data;
+        // 等待DOM更新后滚动到最下方
+        await nextTick();
+        scrollToBottom();
     } catch (error) {
         console.error('获取聊天记录失败:', error);
     }
@@ -59,11 +57,17 @@ const getChatHistory = async () => {
 const chat = async () => {
     if (message.value.trim() === '') return;
     chatHistory.value.push({ msg: message.value, isUser: true, createTime: new Date().toLocaleString() });
+    await nextTick();
+    scrollToBottom();
+    const trueMessage = message.value;
     message.value = '';
     loading.value = true;
     try {
-        const res = await chatAPI(message.value);
+        const res = await chatAPI(trueMessage);
         chatHistory.value = res.data;
+        // 等待DOM更新后滚动到最下方
+        await nextTick();
+        scrollToBottom();
     } catch (error) {
         console.error('发送消息失败:', error);
     } finally {
@@ -72,8 +76,29 @@ const chat = async () => {
 };
 
 // 清空聊天记录的方法
-const clearChatHistory = () => {
-    chatHistory.value = [];
+const clearChatHistory = async () => {
+    try {
+        const result = await ElMessageBox.confirm('确认清空聊天开启新对话?', '取消确认', {
+            type: 'warning',
+            lockScroll: false,
+        });
+        if (result === 'confirm') {
+            const res = await deleteChatHistoryAPI();
+            chatHistory.value = [];
+        }
+    } catch (error) {
+        // 用户取消操作时，ElMessageBox.confirm 会抛出异常，这里可以选择忽略
+        if (error !== 'cancel') {
+            console.error('清空聊天记录时发生错误:', error);
+        }
+    }
+};
+
+// 滚动到聊天区域最下方的方法
+const scrollToBottom = () => {
+    if (chatMessagesRef.value) {
+        chatMessagesRef.value.scrollTop = chatMessagesRef.value.scrollHeight;
+    }
 };
 
 onMounted(() => {
@@ -112,9 +137,11 @@ onMounted(() => {
 .user-avatar {
     margin-top: 5px;
 }
+
 .ai-avatar {
     margin-top: 5px;
 }
+
 .send-button {
     margin-left: 10px;
     margin-top: 10px;
@@ -142,9 +169,12 @@ onMounted(() => {
 }
 
 .message-time {
-    font-size: 12px; /* 字体改小 */
-    color: #999; /* 字体颜色为灰色 */
-    display: block; /* 让时间显示在气泡框下面 */
+    font-size: 12px;
+    /* 字体改小 */
+    color: #999;
+    /* 字体颜色为灰色 */
+    display: block;
+    /* 让时间显示在气泡框下面 */
     margin-top: 5px;
 }
 
