@@ -1,41 +1,56 @@
 <template>
   <div style="display: flex;justify-content: space-between;">
-    <el-menu
-        :default-active="route.path" router
-        class="sys-menu-vertical"
-        :collapse-transition='false'
-        @select="handleMenuSelected"
-    >
+    <el-menu :default-active="route.path" router class="sys-menu-vertical" :collapse-transition='false'
+      @select="handleMenuSelected">
       <el-menu-item :index="systemCtrlURI">
-        <el-icon><DataLine /></el-icon>
+        <el-icon>
+          <DataLine />
+        </el-icon>
         <template #title>概览</template>
       </el-menu-item>
       <el-sub-menu index="2">
         <template #title>
-          <el-icon><SetUp /></el-icon>
+          <el-icon>
+            <SetUp />
+          </el-icon>
           <span>系统</span>
         </template>
         <el-menu-item index="1-1" v-if="false">系统配置</el-menu-item>
         <el-menu-item index="/sys-ctrl/sensitive">敏感词配置</el-menu-item>
       </el-sub-menu>
       <el-menu-item :index="systemCtrlURI + '/mail'" v-if="false">
-        <el-icon><Message /></el-icon>
+        <el-icon>
+          <Message />
+        </el-icon>
         <template #title>邮件</template>
       </el-menu-item>
       <el-menu-item :index="systemCtrlURI + '/tag'">
-        <el-icon><PriceTag /></el-icon>
+        <el-icon>
+          <PriceTag />
+        </el-icon>
         <template #title>标签</template>
       </el-menu-item>
       <el-menu-item :index="systemCtrlURI + '/category'">
-        <el-icon><Guide /></el-icon>
-        <template #title>赛事分类管理</template>
+        <el-icon>
+          <Guide />
+        </el-icon>
+        <template #title>赛事分类</template>
+      </el-menu-item>
+      <el-menu-item :index="systemCtrlURI + '/prompt'">
+        <el-icon>
+          <ChatLineRound />
+        </el-icon> <template #title>prompt</template>
       </el-menu-item>
       <el-menu-item :index="systemCtrlURI + '/authority'" v-if="false">
-        <el-icon><Key /></el-icon>
+        <el-icon>
+          <Key />
+        </el-icon>
         <template #title>权限</template>
       </el-menu-item>
       <el-menu-item :index="systemCtrlURI + '/user'">
-        <el-icon><UserFilled /></el-icon>
+        <el-icon>
+          <UserFilled />
+        </el-icon>
         <template #title>用户</template>
       </el-menu-item>
     </el-menu>
@@ -44,7 +59,7 @@
       <router-view v-slot="{ Component, route }" name="sysMain">
         <transition name="fade-transform" mode="out-in">
           <keep-alive :exclude="['AdminOverview']">
-            <component :is="Component" :key="route.path"/>
+            <component :is="Component" :key="route.path" />
           </keep-alive>
         </transition>
       </router-view>
@@ -62,7 +77,7 @@ import {
   PriceTag,
   UserFilled,
 } from '@element-plus/icons-vue';
-import {useRoute, useRouter} from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 const router = useRouter();
 const route = useRoute();
@@ -72,7 +87,7 @@ const props = defineProps({
 })
 const emits = defineEmits(['closeLeftExpandDrawer'])
 
-const systemCtrlURI:string = import.meta.env.VITE_SYSTEM_CONTROL_URI;
+const systemCtrlURI: string = import.meta.env.VITE_SYSTEM_CONTROL_URI;
 
 function handleMenuSelected(index) {
   emits('closeLeftExpandDrawer')
@@ -83,6 +98,7 @@ function handleMenuSelected(index) {
 .sys-menu-vertical {
   margin-right: 20px;
 }
+
 .sys-main {
   width: 100%;
   min-height: 100vh;
@@ -90,6 +106,7 @@ function handleMenuSelected(index) {
   background: var(--el-bg-color-overlay);
   border-radius: var(--custom-border-radius);
 }
+
 html.dark .sys-main {
   background-color: var(--custom-trend-header-bg-color);
 }
@@ -100,6 +117,7 @@ html.dark .sys-main {
   width: 230px;
   height: 100%;
 }
+
 .sys-menu-vertical.el-menu {
   border-right: 0;
   border-radius: var(--custom-border-radius);
@@ -110,16 +128,19 @@ html.dark .sys-menu-vertical {
 }
 
 .sys-menu-vertical .el-menu-item {
-  transition: border-color var(--el-transition-duration),background-color var(--el-transition-duration);
+  transition: border-color var(--el-transition-duration), background-color var(--el-transition-duration);
 }
 
-.fade-transform-leave-active, .fade-transform-enter-active {
+.fade-transform-leave-active,
+.fade-transform-enter-active {
   transition: all .5s;
 }
+
 .fade-transform-enter {
   opacity: 0;
   transform: translateX(-30px);
 }
+
 .fade-transform-leave-to {
   opacity: 0;
   transform: translateX(30px);

@@ -1,7 +1,11 @@
 <template>
     <div class="chat-container">
         <div class="chat-messages">
-            <div v-for="record in chatHistory" :key="record.recordId"
+            <!-- 当聊天记录为空时显示提示信息 -->
+            <div v-if="chatHistory.length === 0" class="no-chat-message">
+                暂时没有对话信息
+            </div>
+            <div v-else v-for="record in chatHistory" :key="record.recordId"
                 :class="{ 'user-message': record.isUser, 'ai-message': !record.isUser }">
                 <el-avatar v-if="!record.isUser" :src="aiAvatar" size="small" shape="square" class="ai-avatar"/>
                 <div class="message-box">
@@ -158,5 +162,12 @@ onMounted(() => {
 .loading {
     text-align: center;
     margin-top: 10px;
+}
+
+/* 新增样式：空聊天记录提示信息 */
+.no-chat-message {
+    text-align: center;
+    color: #999;
+    margin-top: 20px;
 }
 </style>

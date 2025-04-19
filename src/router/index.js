@@ -4,6 +4,7 @@ import {ElMessage} from 'element-plus'
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 import useUserStore from "../stores/userStore";
+import { Loading } from '@element-plus/icons-vue';
 
 const global_title = import.meta.env.VITE_GLOBAL_TITLE;
 
@@ -64,7 +65,7 @@ const router = createRouter({
                 {
                     path: '', name: 'ai',
                     components: {default: () => import('../views/ai/Ai.vue')},
-                    meta: {title: "AI - " + global_title, mainTransition: '', bodyTransition: ''},
+                    meta: {title: "AI - " + global_title, mainTransition: '', bodyTransition: '', loading: true},
                 },
             ]    
         },
@@ -130,7 +131,12 @@ const router = createRouter({
                 {
                     path: 'category', name: 'adminCategory',
                     components: {sysMain: () => import('../views/tabs/admin/AdminCategory.vue')},
-                    meta: {title: '管理中心 - 赛事分类管理 - ' + global_title}
+                    meta: {title: '管理中心 - 赛事分类 - ' + global_title}
+                },
+                {
+                    path: 'prompt', name: 'adminPrompt',
+                    components: {sysMain: () => import('../views/tabs/admin/AdminPrompt.vue')},
+                    meta: {title: '管理中心 - prompt - ' + global_title}
                 },
                 {
                     path: 'authority', name: 'adminAuthority',
@@ -145,8 +151,8 @@ const router = createRouter({
                 {
                     path: 'user', name: 'adminUser',
                     components: {sysMain: () => import('../views/tabs/admin/AdminUser.vue')},
-                    meta: {title: '管理中心 - 用户管理 - ' + global_title}
-                }
+                    meta: {title: '管理中心 - 用户 - ' + global_title}
+                },
             ],
             meta: {requireAuth: true, requireAdmin: true, requireEmailVerified: true},
         },
@@ -394,7 +400,32 @@ router.beforeEach((to, from, next) => {
     }
 })
 
+// 新增函数：在项目启动时遍历所有路由并跳转
+async function visitAllRoutes() {
+    const routes = router.getRoutes();
+    for (const route of routes) {
+        if (route.path !== '*') { // 排除 404 路由
+            try {
+                await router.push(route.path);
+                // 可以添加适当的延迟，确保页面加载完成
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            } catch (error) {
+                console.error(`跳转至 ${route.path} 时出错:`, error);
+            }
+        }
+    }
+    // 跳转回首页
+    await router.push('/');
+}
+
+// 标记是否为第一次启动
+let isFirstLaunch = true;
+
 router.afterEach(() => {
+    // if (isFirstLaunch) {
+    //     isFirstLaunch = false;
+    //     visitAllRoutes();
+    // }
     NProgress.done();
 })
 
