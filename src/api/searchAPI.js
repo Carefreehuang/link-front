@@ -20,6 +20,16 @@ export function searchUsersAPI(keyword) {
     })
 }
 
+export function searchCompetitionsAPI(keyword) {
+    return request({
+        url: '/search/competition',
+        method: 'get',
+        params: {
+            keyword,
+        }
+    })
+}
+
 export function addPostsAPI() {
     return request({
         url: '/search/addPosts',
@@ -33,6 +43,16 @@ export function addPostsAPI() {
 export function addUsersAPI() {
     return request({
         url: '/search/addUsers',
+        method: 'post',
+        headers: {
+            requireToken: true
+        },
+    })
+}
+
+export function addCompetitionAPI() {
+    return request({
+        url: '/search/addCompetitions',
         method: 'post',
         headers: {
             requireToken: true

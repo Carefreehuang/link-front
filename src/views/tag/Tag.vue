@@ -5,10 +5,10 @@
       <el-header class="tag-header">
         <div class="tag-breadcrumb">
           <el-breadcrumb :separator-icon="DArrowRight">
-            <el-breadcrumb-item>
+            <!-- <el-breadcrumb-item>
               <font-awesome-icon v-if="tag.icon" :icon="tag.icon"/>
               <font-awesome-icon v-else icon="fa-solid fa-mug-hot" class="tag-icon"/>
-            </el-breadcrumb-item>
+            </el-breadcrumb-item> -->
             <el-breadcrumb-item :to="{path: '/tags'}">标签</el-breadcrumb-item>
             <el-breadcrumb-item :to="{path: '/tags', hash: '#' + tag.tagOption.name}">{{ tag.tagOption.name }}</el-breadcrumb-item>
             <el-breadcrumb-item>{{ tag.name }}</el-breadcrumb-item>
@@ -21,13 +21,13 @@
           <div class="tag-box">
             <div class="tag-box-nav">
               <div class="tag-box-nav-left">
-                <div>全部</div>
+                <!-- <div>全部</div>
                 <div>最新</div>
-                <div>热门</div>
+                <div>热门</div> -->
               </div>
               <div  class="tag-box-nav-right">
-                <font-awesome-icon v-if="tag.icon" :icon="tag.icon"/>
-                <font-awesome-icon v-else icon="fa-solid fa-mug-hot" class="tag-icon"/>
+                <!-- <font-awesome-icon v-if="tag.icon" :icon="tag.icon"/>
+                <font-awesome-icon v-else icon="fa-solid fa-mug-hot" class="tag-icon"/> -->
                 <span class="tag-name" v-text="tag.name"></span>
               </div>
             </div>
@@ -38,13 +38,13 @@
           </div>
         </el-main>
 
-        <el-aside width="230px" class="hidden-sm-and-down">
+        <!-- <el-aside width="230px" class="hidden-sm-and-down">
           <div style="height: 200px; background-color: var(--custom-trend-header-bg-color); border-radius: var(--custom-border-radius);"></div>
           <div style="height: 15px"></div>
           <div style="height: 200px; background-color: var(--custom-trend-header-bg-color); border-radius: var(--custom-border-radius);"></div>
           <div style="height: 15px"></div>
           <div style="height: 200px; background-color: var(--custom-trend-header-bg-color); border-radius: var(--custom-border-radius);"></div>
-        </el-aside>
+        </el-aside> -->
       </el-container>
     </el-container>
   </div>

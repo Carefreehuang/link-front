@@ -1,9 +1,9 @@
 <template>
   <div class="single-container" :style="topHeight()">
     <el-row :gutter="0">
-      <el-col :span="18" :offset="3"><div class="grid-content bar-bg-1"/></el-col>
+      <!-- <el-col :span="18" :offset="3"><div class="grid-content bar-bg-1"/></el-col>
       <el-col :span="20" :offset="2"><div class="grid-content bar-bg-2"/></el-col>
-      <el-col :span="22" :offset="1"><div class="grid-content bar-bg-3"/></el-col>
+      <el-col :span="22" :offset="1"><div class="grid-content bar-bg-3"/></el-col> -->
       <el-col :span="24" :offset="0">
         <div class="grid-main bar-bg-4" :style="isRadius()">
           <slot name="main"/>

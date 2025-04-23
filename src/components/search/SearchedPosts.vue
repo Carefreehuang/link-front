@@ -8,22 +8,17 @@
               <div v-dompurify-html="post.title" class="result-title"/>
             </router-link>
             <div class="result-info">
-              <router-link :to="{path: '/u/' + post.author}" class="result-author-link">
-                <div class="result-icon"><i class="czs-forum"/></div>
-                <span v-if="post.nickname" v-text="post.nickname"/>
-                <span v-else v-text="post.author"/>
-              </router-link>
               <div class="result-time">
                 <div class="result-icon"><i class="czs-time"/></div>
                 <el-tooltip :content="post.createTime.toString()" placement="bottom" :show-after="600">
                   <span v-text="moment(post.createTime).fromNow()"/>
                 </el-tooltip>
               </div>
-              <template v-for="(tag, index) of post.tags" :key="index">
+              <!-- <template v-for="(tag, index) of post.tags" :key="index">
                 <el-tag size="small" class="result-tag hidden-xs-only" type="info">
                   <router-link :to="{path: '/t/' + tag.label}" class="result-tag-link">{{ tag.name }}</router-link>
                 </el-tag>
-              </template>
+              </template> -->
             </div>
             <u-fold line="3" class="result-content-fold">
               <span v-dompurify-html="post.content" class="result-content"/>

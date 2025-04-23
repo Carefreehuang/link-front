@@ -6,66 +6,61 @@
           <template v-for="(user, index) of props.users" :key="index">
             <tr v-if="(index % 2) === 0">
               <td>
-                <router-link :to="{path: '/u/' + removeHtml(user.username)}" class="result-link">
+                <router-link :to="{ path: '/u/' + removeHtml(user.username) }" class="result-link">
                   <div class="result">
-                    <el-avatar class="result-avatar" :src="user.avatar" shape="square" :size="80"/>
+                    <el-avatar class="result-avatar" :src="user.avatar" shape="square" :size="80" />
                     <div class="result-info">
                       <div class="result-info-header">
                         <div>
-                          <el-text truncated v-if="user.nickname" v-dompurify-html="user.nickname" class="result-nickname"/>
-                          <el-text truncated v-else v-dompurify-html="user.username" class="result-nickname"/>
-                          <el-text truncated v-dompurify-html="'@' + user.username" class="result-username"/>
-                          <el-icon v-if="user.emailVerified" class="verified-icon"><SuccessFilled /></el-icon>
+                          <el-text truncated v-dompurify-html="user.username" class="result-nickname" />
+                          <el-text truncated v-dompurify-html="user.email" class="result-username" />
+                          <el-tooltip v-if="user.emailVerified" content="邮箱已认证" placement="top" :show-after="600">
+                            <el-icon class="verified-icon">
+                              <SuccessFilled />
+                            </el-icon>
+                          </el-tooltip>
+                          <el-tooltip v-else content="邮箱未认证" placement="top" :show-after="600">
+                            <el-icon class="unVerified-icon">
+                              <WarningFilled />
+                            </el-icon>
+                          </el-tooltip>
                         </div>
 
                       </div>
                       <div class="result-info-bottom">
-                        <div class="last-online-time" v-show="false">
-                          <div class="time-icon"><i class="czs-time-l"/></div>
-                          <el-tooltip effect="dark" content="上次活跃时间" placement="bottom" :show-after="600">
-                            <div class="offline-time" v-text="'5 小时前'"></div>
-                          </el-tooltip>
-                        </div>
-                        <div class="reg-time">
-                          <div class="time-icon"><i class="czs-bar-chart-l"/></div>
-                          <el-tooltip effect="dark" :content="user.createTime" placement="bottom" :show-after="600">
-                            <div class="offline-time" v-text="'加入于 ' + moment(user.createTime).fromNow()"></div>
-                          </el-tooltip>
-                        </div>
-                        <div v-text="'No.' + user.id" class="serial-number"/>
+                        <el-text v-dompurify-html="user.school" class="school" />
+                        <div v-dompurify-html="user.major" class="major" />
                       </div>
                     </div>
                   </div>
                 </router-link>
               </td>
               <td v-if="(index + 1) < users.length">
-                <router-link :to="{path: '/u/' + removeHtml(users[index + 1].username)}" class="result-link">
+                <router-link :to="{ path: '/u/' + removeHtml(users[index + 1].username) }" class="result-link">
                   <div class="result">
-                    <el-avatar class="result-avatar" :src="users[index + 1].avatar" shape="square" :size="80"/>
+                    <el-avatar class="result-avatar" :src="users[index + 1].avatar" shape="square" :size="80" />
                     <div class="result-info">
                       <div class="result-info-header">
                         <div>
-                          <el-text truncated v-if="users[index + 1].nickname" v-dompurify-html="users[index + 1].nickname" class="result-nickname"/>
-                          <el-text truncated v-else v-dompurify-html="users[index + 1].username" class="result-nickname"/>
-                          <el-text truncated v-dompurify-html="'@' + users[index + 1].username" class="result-username"/>
-                          <el-icon v-if="users[index + 1].emailVerified" class="verified-icon"><SuccessFilled /></el-icon>
+                          <el-text truncated v-dompurify-html="users[index + 1].username" class="result-nickname" />
+                          <el-text truncated v-dompurify-html="users[index + 1].email" class="result-username" />
+                          <el-tooltip v-if="users[index + 1].emailVerified" content="邮箱已认证" placement="top"
+                            :show-after="600">
+                            <el-icon class="verified-icon">
+                              <SuccessFilled />
+                            </el-icon>
+                          </el-tooltip>
+                          <el-tooltip v-else content="邮箱未认证" placement="top" :show-after="600">
+                            <el-icon class="unVerified-icon">
+                              <WarningFilled />
+                            </el-icon>
+                          </el-tooltip>
                         </div>
 
                       </div>
                       <div class="result-info-bottom">
-                        <div class="last-online-time" v-show="false">
-                          <div class="time-icon"><i class="czs-time-l"/></div>
-                          <el-tooltip effect="dark" content="上次活跃时间" placement="bottom" :show-after="600">
-                            <div class="offline-time" v-text="'5 小时前'"></div>
-                          </el-tooltip>
-                        </div>
-                        <div class="reg-time">
-                          <div class="time-icon"><i class="czs-bar-chart-l"/></div>
-                          <el-tooltip effect="dark" :content="users[index + 1].createTime" placement="bottom" :show-after="600">
-                            <div class="offline-time" v-text="'加入于 ' + moment(users[index + 1].createTime).fromNow()"></div>
-                          </el-tooltip>
-                        </div>
-                        <div v-text="'No.' + users[index + 1].id" class="serial-number"/>
+                        <el-text v-dompurify-html="user.school" class="school" />
+                        <div v-dompurify-html="user.major" class="major" />
                       </div>
                     </div>
                   </div>
@@ -80,9 +75,9 @@
 </template>
 
 <script setup>
-import {onMounted, ref, watch} from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import moment from "moment";
-import {SuccessFilled} from '@element-plus/icons-vue';
+import { SuccessFilled, WarningFilled } from '@element-plus/icons-vue';
 
 const props = defineProps({
   users: Array,
@@ -134,12 +129,20 @@ function tableWidth() {
   margin-bottom: 15px;
   border-radius: var(--custom-border-radius);
 }
+
 html.dark .result {
   border-color: #333942;
 }
 
 .result-avatar {
   margin-right: 25px;
+}
+
+.school {
+  color: #409EFF;
+  margin-right: 10px;
+  font-size: 18px;
+  font-weight: 600;
 }
 
 .result-info {
@@ -152,7 +155,8 @@ html.dark .result {
   display: inline-flex;
 }
 
-.last-online-time, .reg-time {
+.last-online-time,
+.reg-time {
   display: inline-flex;
   cursor: pointer;
 }
@@ -169,19 +173,21 @@ html.dark .reg-time {
   font-size: 17px;
 }
 
-.serial-number {
-  color: transparent;
-  background: linear-gradient(to right,#409EFF,#529b2e);
-  -webkit-background-clip: text;
+.major {
+  font-size: 12px;
+  color: #9ea0a3;
+  font-weight: 500;
+  margin-right: 8px;
 }
 
 .result-nickname {
   font-size: 35px;
   font-weight: 600;
   margin-right: 8px;
-  color: #778799;
+  /* color: #778799; */
   -webkit-background-clip: text;
 }
+
 html.dark .result-nickname span {
   color: #a5292a !important;
 }
@@ -196,12 +202,16 @@ html.dark .result-nickname span {
   margin-right: 8px;
 }
 
-.result-info-bottom > div:not(:last-child) {
+.result-info-bottom>div:not(:last-child) {
   margin-right: 12px;
 }
 
 .verified-icon {
   color: #8ebc8f;
+}
+
+.unVerified-icon {
+  color: #ff0000;
 }
 
 .result-link {
@@ -230,33 +240,41 @@ html.dark .result-nickname span {
   }
 }
 
-@media only screen and (max-width: 768px){
+@media only screen and (max-width: 768px) {
   .results {
     margin-top: 18px;
   }
+
   .result {
     padding: 10px;
   }
+
   .result-avatar {
     width: 60px !important;
     height: 60px !important;
   }
+
   .result-nickname {
     font-size: 22px;
     max-width: 110px;
   }
+
   .result-username {
     max-width: 100px;
   }
+
   .result-info-bottom {
     line-height: 1;
   }
+
   .result-avatar {
     margin-right: 10px;
   }
+
   .time-icon {
     margin: 0 3px 0 0;
   }
+
   .results-table td {
     width: 100%;
     display: block;

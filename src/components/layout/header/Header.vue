@@ -10,8 +10,10 @@
           <!-- 左边的菜单栏 -->
           <el-col :xs="7" :sm="10" :md="10" :lg="9" :xl="9" class="header-body-left">
             <el-tooltip content="返回首页" placement="bottom" effect="dark" class="logo-tooltip">
-              <el-image v-show="!needHiddenLogo" class="logo" @click="goToHomeAndRefresh" src="src\assets\img\logo2.png"
+              <div @click="goToHomeAndRefresh">
+                <el-image v-show="!needHiddenLogo" class="logo"  src="src\assets\img\logo2.png"
                 fit="fill" />
+              </div>
             </el-tooltip>
 
             <div v-show="needHiddenLogo" class="left-expand-bar" @click="showLeftExpandDrawer = true">

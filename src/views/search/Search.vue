@@ -3,42 +3,49 @@
     <template #main>
       <div class="search-bar-box">
         <el-col :span="searchInputSpan" :offset="searchInputOffset" class="search-col">
-          <el-input v-model="inputVal" placeholder="请输入搜索关键词" size="large" clearable @keyup.enter="handleSearch(inputVal)">
+          <el-input v-model="inputVal" placeholder="请输入搜索关键词" size="large" clearable
+            @keyup.enter="handleSearch(inputVal)">
             <template #prepend>
-              <el-select v-model="selectVal" placeholder="选择" style="width: 85px" size="large">
-                <el-option label="主题" value="post" />
-                <el-option label="用户" value="user" :disabled="!userStore.isLogin"/>
+              <el-select v-model="selectVal" placeholder="选择" style="width: 85px" size="large" @change="handleSelect">
+                <el-option label="帖子" value="post" />
+                <el-option label="赛事" value="competition" />
+                <el-option label="用户" value="user" :disabled="!userStore.isLogin" />
               </el-select>
             </template>
             <template #append>
               <el-button type="primary" plain :loading="searchLoading" @click="handleSearch(inputVal)">
-                <i class="czs-search-l"/>
+                <i class="czs-search-l" />
               </el-button>
             </template>
           </el-input>
         </el-col>
       </div>
-      <div class="search-result" v-loading="searchLoading" element-loading-text="正在搜索中" element-loading-background="transparent">
+      <div class="search-result" v-loading="searchLoading" element-loading-text="正在搜索中"
+        element-loading-background="transparent">
         <el-empty v-if="!searchLoading && emptySearchResult" :description="emptySearchResultDescription">
           <el-button @click="handleInsertToEs" v-hasRole="['ADMIN']">插入数据</el-button>
         </el-empty>
-        <SearchedPosts v-if="selectVal === 'post' && posts.length > 0" :posts="posts" :window-width="windowWidth"/>
-        <SearchedUsers v-if="selectVal === 'user' && users.length > 0" :users="users" :window-width="windowWidth"/>
-        <el-empty v-if="posts.length > 0 && posts.length < 15 || users.length > 0 && users.length < 15" description="没有更多了"/>
+        <SearchedPosts v-if="selectVal === 'post' && posts.length > 0" :posts="posts" :window-width="windowWidth" />
+        <SearchedUsers v-if="selectVal === 'user' && users.length > 0" :users="users" :window-width="windowWidth" />
+        <SearchedCompetitions v-if="selectVal === 'competition' && competitions.length > 0" :competitions="competitions"
+          :window-width="windowWidth" />
+        <el-empty v-if="posts.length > 0 && posts.length < 15 || users.length > 0 && users.length < 15"
+          description="没有更多了" />
       </div>
     </template>
   </CascadePage>
 </template>
 
 <script setup lang="ts">
-import {onBeforeMount, onMounted, ref, watch} from 'vue';
-import {useRoute, useRouter} from "vue-router";
-import {searchPostsAPI, searchUsersAPI, addPostsAPI, addUsersAPI} from '../../api/searchAPI';
+import { onBeforeMount, onMounted, ref, watch } from 'vue';
+import { useRoute, useRouter } from "vue-router";
+import { searchPostsAPI, searchUsersAPI, addPostsAPI, addUsersAPI, searchCompetitionsAPI, addCompetitionAPI } from '../../api/searchAPI';
 import SearchedPosts from "../../components/search/SearchedPosts.vue";
 import CascadePage from "../../components/page/CascadePage.vue";
 import SearchedUsers from "../../components/search/SearchedUsers.vue";
 import useUserStore from '../../stores/userStore';
-import {ElMessage, ElMessageBox} from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
+import SearchedCompetitions from '../../components/search/SearchedCompetitions.vue';
 
 const router = useRouter();
 const route = useRoute();
@@ -50,7 +57,13 @@ onBeforeMount((() => {
   inputVal.value = <string>route.query.keyword;
 }))
 
-watch(() => route.query.keyword, (New:String, Old) => {
+const handleSelect = (val: String) => {
+  posts.value = [];
+  users.value = [];
+  competitions.value = [];
+}
+
+watch(() => route.query.keyword, (New: String, Old) => {
   if (New !== inputVal.value && New !== '' && New !== undefined) {
     inputVal.value = New.trim();
     handleSearch(New.trim());
@@ -92,11 +105,19 @@ window.onresize = () => {
 
 const posts = ref([]);
 const users = ref([]);
+const competitions = ref([]);
 const searchLoading = ref(false);
 const emptySearchResult = ref(true);
 const emptySearchResultDescription = ref('请输入关键词进行搜索');
 function handleSearch(val: String) {
-  router.push({name: 'search', query: {keyword: val}});
+  if (val === '') {
+    ElMessage({
+      type: 'warning',
+      message: '请输入搜索关键词',
+    })
+    return;
+  }
+  router.push({ name: 'search', query: { keyword: val } });
   posts.value.length = users.value.length = 0;
   if (selectVal.value === 'post') {
     searchLoading.value = true;
@@ -121,7 +142,7 @@ function handleSearch(val: String) {
         searchLoading.value = false;
       })
     }, 500)
-  } else {
+  } else if (selectVal.value === 'user') {
     searchLoading.value = true;
     setTimeout(() => {
       searchUsersAPI(val).then(response => {
@@ -144,64 +165,105 @@ function handleSearch(val: String) {
         searchLoading.value = false;
       })
     }, 500)
+  } else if (selectVal.value === 'competition') {
+    searchLoading.value = true;
+    setTimeout(() => {
+      searchCompetitionsAPI(val).then(response => {
+        console.log(response)
+        if (response.message === '没有与关键词匹配的结果') {
+          emptySearchResult.value = true;
+          emptySearchResultDescription.value = response.message;
+          return;
+        }
+
+        emptySearchResult.value = false;
+        if (response.data.competitions) {
+          competitions.value = response.data.competitions;
+        }
+      }).catch(error => {
+        console.log(error)
+        emptySearchResult.value = true;
+        emptySearchResultDescription.value = error.message;
+      }).finally(() => {
+        searchLoading.value = false;
+      })
+    }, 500)
   }
 }
 
 function handleInsertToEs() {
   ElMessageBox.confirm(
-      '确认插入全部数据到搜索引擎中?',
-      '插入提示',
-      {
-        confirmButtonText: '确认',
-        cancelButtonText: '取消',
-        lockScroll: false,
-        type: 'warning',
-        beforeClose: (action, instance, done) => {
-          if (action === 'confirm') {
-            instance.confirmButtonLoading = true;
-            instance.confirmButtonText = '插入中...';
-            setTimeout(() => {
-              if (selectVal.value === 'post') {
-                addPostsAPI().then(response => {
-                  ElMessage({
-                    type: 'success',
-                    message: response.message,
-                  })
-                  done();
-                }).catch(error => {
-                  console.log(error)
-                  ElMessage({
-                    type: 'error',
-                    message: error.message,
-                  })
-                }).finally(() => {
-                  instance.confirmButtonText = '确认';
-                  instance.confirmButtonLoading = false;
+    '确认插入全部数据到搜索引擎中?',
+    '插入提示',
+    {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      lockScroll: false,
+      type: 'warning',
+      beforeClose: (action, instance, done) => {
+        if (action === 'confirm') {
+          instance.confirmButtonLoading = true;
+          instance.confirmButtonText = '插入中...';
+          setTimeout(() => {
+            if (selectVal.value === 'post') {
+              addPostsAPI().then(response => {
+                ElMessage({
+                  type: 'success',
+                  message: response.message,
                 })
-              } else {
-                addUsersAPI().then(response => {
-                  console.log(response)
-                  ElMessage({
-                    type: 'success',
-                    message: response.message,
-                  })
-                  done();
-                }).catch(error => {
-                  console.log(error)
-                  ElMessage({
-                    type: 'error',
-                    message: error.message,
-                  })
-                }).finally(() => {
-                  instance.confirmButtonText = '确认';
-                  instance.confirmButtonLoading = false;
+                done();
+              }).catch(error => {
+                console.log(error)
+                ElMessage({
+                  type: 'error',
+                  message: error.message,
                 })
-              }
-            }, 500)
-          } else done();
-        }
+              }).finally(() => {
+                instance.confirmButtonText = '确认';
+                instance.confirmButtonLoading = false;
+              })
+            } else if (selectVal.value === 'user') {
+              addUsersAPI().then(response => {
+                console.log(response)
+                ElMessage({
+                  type: 'success',
+                  message: response.message,
+                })
+                done();
+              }).catch(error => {
+                console.log(error)
+                ElMessage({
+                  type: 'error',
+                  message: error.message,
+                })
+              }).finally(() => {
+                instance.confirmButtonText = '确认';
+                instance.confirmButtonLoading = false;
+              })
+            } else if (selectVal.value === 'competition') {
+              addCompetitionAPI().then(response => {
+                console.log(response)
+                ElMessage({
+                  type: 'success',
+                  message: response.message,
+                })
+                done();
+              }).catch(error => {
+                console.log(error)
+                ElMessage({
+                  type: 'error',
+                  message: error.message,
+                })
+              }).finally(() => {
+                instance.confirmButtonText = '确认';
+                instance.confirmButtonLoading = false;
+              })
+            }
+          }, 500)
+        } else done();
       }
-  ).then(() => {}).catch(() => {})
+    }
+  ).then(() => { }).catch(() => { })
 }
 </script>
 
@@ -209,9 +271,11 @@ function handleInsertToEs() {
 .search-bar-box {
   border-bottom: 1px solid #eaeaea;
 }
+
 html.dark .search-bar-box {
   border-bottom-color: var(--custom-trend-td-bottom-color);
 }
+
 .search-col {
   padding-top: 50px;
   padding-bottom: 50px;
@@ -227,6 +291,7 @@ html.dark .search-bar-box {
     padding-top: 30px;
     padding-bottom: 30px;
   }
+
   .search-result {
     padding: 0;
   }

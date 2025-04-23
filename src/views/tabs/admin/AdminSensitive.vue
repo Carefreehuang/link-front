@@ -6,7 +6,6 @@
           <template #prepend>
             <el-select v-model="selectVal" placeholder="选择" style="width: 85px" size="large">
               <el-option label="添加" value="add" />
-              <el-option label="搜索" value="search" />
             </el-select>
           </template>
           <template #append>
