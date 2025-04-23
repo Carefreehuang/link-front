@@ -59,3 +59,10 @@ export function addCompetitionAPI() {
         },
     })
 }
+
+export function getSearchHotKeywordAPI() {
+    return request({
+        url: '/search/hotKeyword',
+        method: 'get'
+    })
+}
