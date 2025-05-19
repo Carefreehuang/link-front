@@ -77,7 +77,7 @@
                 <template #dropdown>
                   <el-dropdown-menu class="drop-item">
                     <el-dropdown-item>
-                      <div class="write-blog" @click="toRelease()">
+                      <div v-if="hasRole(['ADMIN', 'TEACHER'])" class="write-blog" @click="toRelease()">
                         <div><i class="czs-medal-l"></i></div>
                         <div>发布比赛</div>
                       </div>
@@ -197,7 +197,7 @@ let timer: number | null = null;
 onMounted(() => {
   if (userStore.isLogin) {
     getUnreadMessageCount();
-    timer = setInterval(getUnreadMessageCount, 5000); // 每5s请求一次
+    timer = setInterval(getUnreadMessageCount, 60000); // 每5s请求一次
   }
   windowWidth.value = window.innerWidth;
   watch(() => route.name, (New: String) => {

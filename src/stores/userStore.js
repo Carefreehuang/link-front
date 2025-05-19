@@ -68,10 +68,11 @@ const useUserStore = defineStore("user", {
                     })
 
                     if (user.role) {
-                        this.role.push(user.role);
+                        this.role = Array.isArray(user.role) ? user.role : [user.role];
                     } else {
-                        this.role = ['ROLE_USER']
+                        this.role = ['ROLE_USER'];
                     }
+                    
                     if (user.authorities && user.authorities.length > 0) {
                         this.authorities = user.authorities;
                     } else {

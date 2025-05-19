@@ -38,3 +38,17 @@ export function cancelBanUserAPI(uid) {
         }
     })
 }
+
+export function updateRoleAPI(uid, rid) {
+    return request({
+        url: '/sys-ctrl/role',
+        method: 'put',
+        params: {
+            uid: uid,
+            rid: rid,
+        },
+        headers: {
+            requireToken: true
+        }
+    })
+}

@@ -12,7 +12,7 @@
       >
         <div class="login-banner-body">
           <el-divider class="logo">
-            <el-image style="width: 32px; height: 32px" :src="logo" fit="fill"/>
+            <el-image style="height: 32px" src="src\assets\img\logo2.png" fit="fill"/>
           </el-divider>
           <div class="login-banner">登录到您的账户</div>
         </div>

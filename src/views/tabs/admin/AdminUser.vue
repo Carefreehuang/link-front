@@ -1,139 +1,80 @@
 <template>
   <div class="sys-user">
-    <div class="sys-user-header">
-      <el-input v-model="searchInput" class="search-user" size="large" placeholder="搜索用户" :suffix-icon="Search"/>
-      <el-button v-text="'添加用户'" type="primary" plain/>
-    </div>
     <div class="sys-user-body">
-      <el-table :data="users" style="width: 100%" border table-layout="fixed" class="users-table" @expand-change="rowExpand">
+      <el-table :data="users" style="width: 100%" border table-layout="fixed" class="users-table"
+        @expand-change="rowExpand">
         <template #default>
-          <el-table-column fixed  type="expand">
-            <template #default="props">
-              <div class="expand-user">
-                <div class="left-bar"></div>
-                <el-form class="user-form"
-                         ref="userFormRef"
-                         label-position="right"
-                         :rules="userRules"
-                         :model="userForm[props.row.id]"
-                         size="large"
-                         status-icon
-                         label-width="70px"
-                >
-                  <el-form-item label="简介">
-                    <span v-text="'第 ' + userForm[props.row.id].id + ' 号成员，'"/>
-                    <span v-text="'加入于 ' + moment(userForm[props.row.id].createTime).fromNow()"/>
-                    <el-tooltip :content="userForm[props.row.id].createTime" placement="top" :show-after="600">
-                      <el-icon style="margin-left: 2px"><QuestionFilled /></el-icon>
-                    </el-tooltip>
-                    <span v-text="'，注册 IP 为：'"/><code class="register-ip" v-text="userForm[props.row.id].registerIp"></code><span v-text="'。'"/>
-                  </el-form-item>
-                  <el-form-item label="头像" prop="avatar">
-                    <el-avatar :src="userForm[props.row.id].avatar" style="margin-right: 10px;"/>
-                    <el-button type="danger" :icon="Delete" circle />
-                  </el-form-item>
-                  <el-form-item label="用户名" prop="username">
-                    <el-input
-                        type="text"
-                        autocomplete="off"
-                        v-model.trim="userForm[props.row.id].username"
-                        :keyup.native="userForm[props.row.id].username=userForm[props.row.id].username.replace(/\s+/g, '')"
-                    />
-                  </el-form-item>
-                  <el-form-item label="昵称" prop="nickname">
-                    <el-input
-                        type="text"
-                        autocomplete="off"
-                        v-model.trim="userForm[props.row.id].nickname"
-                        :keyup.native="userForm[props.row.id].nickname=userForm[props.row.id].nickname.replace(/\s+/g, '')"
-                    />
-                  </el-form-item>
-                  <el-form-item label="邮箱" prop="email">
-                    <el-input
-                        type="email"
-                        autocomplete="off"
-                        v-model.trim="userForm[props.row.id].email"
-                        :keyup.native="userForm[props.row.id].email=userForm[props.row.id].email.replace(/\s+/g, '')"
-                    />
-                  </el-form-item>
-                  <el-form-item label="激活">
-                    <el-switch :disabled="userForm[props.row.id].id === 1" v-model="userForm[props.row.id].emailVerified" inline-prompt active-text="是" inactive-text="否"/>
-                    <el-tooltip content="是否激活此用户" placement="top" :show-after="600">
-                      <el-icon style="margin-left: 6px; font-size: 18px;"><QuestionFilled/></el-icon>
-                    </el-tooltip>
-                  </el-form-item>
-                  <el-form-item>
-                    <el-button size="default" type="primary" style="padding: 5px 10px;">保存</el-button>
-                    <el-button v-if="userForm[props.row.id].id !== 1" size="default" type="danger" style="padding: 5px 10px;">删除此用户</el-button>
-                  </el-form-item>
-                </el-form>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="id" width="50px" label="No." align="center"/>
           <el-table-column prop="avatar" width="80px" label="头像" align="center">
             <template #default="scope">
-              <el-avatar :src="scope.row.avatar"/>
+              <el-avatar :src="scope.row.avatar" />
             </template>
           </el-table-column>
           <el-table-column prop="username" label="用户名" align="center" />
-          <el-table-column prop="nickname" label="昵称" align="center">
-            <template #default="scope">
-              <span v-if="scope.row.nickname" v-text="scope.row.nickname"/>
-              <span v-else v-text="'-'"/>
-            </template>
-          </el-table-column>
+          <el-table-column prop="email" label="邮箱" align="center" />
           <el-table-column prop="role" label="角色" align="center">
             <template #default="scope">
-              <span v-if="scope.row.role.rid === 1" v-text="scope.row.role.alias"/>
-              <span v-if="scope.row.role.rid === 2" v-text="scope.row.role.alias"/>
-              <span v-if="scope.row.role.rid === 3" v-text="scope.row.role.alias"/>
-              <span v-if="scope.row.role.rid === 4" v-text="scope.row.role.alias"/>
+              <el-select v-model="scope.row.role.alias" size="small" class="hidden-xs-only" placeholder="请选择角色"
+                style="width: 100px" @change="(value) => handleRole(scope.row, value)">
+                <el-option key="4" label="未认证用户" value="4" />
+                <el-option key="3" label="普通用户" value="3" />
+                <el-option key="6" label="教师" value="6" />
+                <el-option key="1" label="管理员" value="1" />
+              </el-select>
             </template>
           </el-table-column>
           <el-table-column prop="emailVerified" width="80px" label="激活" align="center">
             <template #default="scope">
-              <el-icon v-if="scope.row.emailVerified" class="approve"><SuccessFilled/></el-icon>
-              <el-icon v-else class="disapprove"><CircleCloseFilled/></el-icon>
+              <el-icon v-if="scope.row.emailVerified" class="approve">
+                <SuccessFilled />
+              </el-icon>
+              <el-icon v-else class="disapprove">
+                <CircleCloseFilled />
+              </el-icon>
             </template>
           </el-table-column>
           <el-table-column prop="baned" label="状态" width="80px" align="center">
             <template #default="scope">
-              <el-icon v-if="!scope.row.banned" class="approve"><SuccessFilled/></el-icon>
-              <el-icon v-else class="disapprove"><WarnTriangleFilled/></el-icon>
+              <el-icon v-if="!scope.row.banned" class="approve">
+                <SuccessFilled />
+              </el-icon>
+              <el-icon v-else class="disapprove">
+                <WarnTriangleFilled />
+              </el-icon>
             </template>
           </el-table-column>
           <el-table-column label="操作" width="80px" align="center">
             <template #default="scope">
-              <el-button link type="primary" size="small" :disabled="scope.row.id === 1" @click="handleBanOperation(scope.row)" class="operation-button">
-                <span v-if="scope.row.banned" v-text="'解禁'" class="cancel-ban"/>
-                <span v-else v-text="'封禁'" class="ban"/>
+              <el-button link type="primary" size="small" :disabled="scope.row.id === 1"
+                @click="handleBanOperation(scope.row)" class="operation-button">
+                <span v-if="scope.row.banned" v-text="'解禁'" class="cancel-ban" />
+                <span v-else v-text="'封禁'" class="ban" />
               </el-button>
             </template>
           </el-table-column>
         </template>
         <template #empty>
-          <div style="min-height: 300px" v-loading="loadingUsers" element-loading-text="加载中"/>
-          <el-empty v-if="!loadingUsers && users.length === 0" description="还没有用户"/>
+          <div style="min-height: 300px" v-loading="loadingUsers" element-loading-text="加载中" />
+          <el-empty v-if="!loadingUsers && users.length === 0" description="还没有用户" />
         </template>
       </el-table>
-      <el-empty v-if="!loadingUsers && users.length > 0 && users.length < 20" description="没有更多用户了"/>
+      <el-empty v-if="!loadingUsers && users.length > 0 && users.length < 20" description="没有更多用户了" />
     </div>
 
     <BanUserDialog :show-ban-user-dialog="showBanUserDialog" :user="currentBanOperationUser"
-                   @closeBanUserDialog="handleCloseBanUserDialog" @bannedUser="handleBanUser"/>
+      @closeBanUserDialog="handleCloseBanUserDialog" @bannedUser="handleBanUser" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { Search, SuccessFilled, CircleCloseFilled, WarnTriangleFilled, Delete, QuestionFilled } from '@element-plus/icons-vue';
-import {onBeforeMount, reactive, ref, watch} from 'vue';
-import {getAllUserAPI} from "../../../api/admin/userSysAPI";
-import type {FormInstance, FormRules} from 'element-plus';
+import { onBeforeMount, reactive, ref, watch } from 'vue';
+import { getAllUserAPI, updateRoleAPI } from "../../../api/admin/userSysAPI";
+import type { FormInstance, FormRules } from 'element-plus';
 import moment from "moment";
 import BanUserDialog from "../../../components/user/BanUserDialog.vue";
-import {ElMessage, ElMessageBox} from "element-plus";
-import {cancelBanUserAPI} from '../../../api/admin/userSysAPI';
+import { ElMessage, ElMessageBox } from "element-plus";
+import { cancelBanUserAPI } from '../../../api/admin/userSysAPI';
+import { el } from 'element-plus/es/locale/index.mjs';
 
 const searchInput = ref();
 const users = ref([]);
@@ -150,7 +91,7 @@ onBeforeMount(() => {
 })
 
 function rowExpand(row, expandedRows) {
-  userForm[row.id] = {...row};
+  userForm[row.id] = { ...row };
 }
 
 const userFormRef = ref<FormInstance>();
@@ -167,6 +108,47 @@ const userRules = reactive<FormRules>({
   ]
 })
 
+function handleRole(row, key) {
+  ElMessageBox.confirm(
+    '确认修改该用户的角色?',
+    '修改角色提示',
+    {
+      confirmButtonText: '确认',
+      cancelButtonText: '取消',
+      type: 'warning',
+      beforeClose: (action, instance, done) => {
+        if (action === 'confirm') {
+          instance.confirmButtonLoading = true;
+          instance.confirmButtonText = '修改中...';
+          setTimeout(() => {
+            updateRoleAPI(row.uid, key).then(response => {
+              getAllUserAPI().then(response => {
+                console.log(response);
+                users.value = response.data.users;
+                loadingUsers.value = false;
+              })
+              ElMessage({
+                message: '修改成功',
+                type: 'success',
+              })
+              done();
+            }).catch(error => {
+              console.log(error)
+              instance.confirmButtonText = '确认';
+              ElMessage({
+                message: '修改失败',
+                type: 'error',
+              })
+            }).finally(() => {
+              instance.confirmButtonLoading = false;
+            })
+          }, 500)
+        } else done();
+      }
+    }
+  ).then(() => { }).catch(() => { })
+}
+
 const showBanUserDialog = ref(false);
 const currentBanOperationUser = ref({});
 function handleBanOperation(user) {
@@ -175,40 +157,40 @@ function handleBanOperation(user) {
     showBanUserDialog.value = true;
   } else {
     ElMessageBox.confirm(
-        '确认解除该用户的登录限制?',
-        '解除封禁提示',
-        {
-          confirmButtonText: '确认',
-          cancelButtonText: '取消',
-          type: 'warning',
-          beforeClose: (action, instance, done) => {
-            if (action === 'confirm') {
-              instance.confirmButtonLoading = true;
-              instance.confirmButtonText = '解除中...';
-              setTimeout(() => {
-                cancelBanUserAPI(user.uid).then(response => {
-                  console.log(response)
-                  currentBanOperationUser.value.banned = false;
-                  done();
-                  ElMessage({
-                    message: '解除封禁成功',
-                    type: 'success',
-                  })
-                }).catch(error => {
-                  console.log(error)
-                  instance.confirmButtonText = '确认';
-                  ElMessage({
-                    message: '解除封禁失败',
-                    type: 'error',
-                  })
-                }).finally(() => {
-                  instance.confirmButtonLoading = false;
+      '确认解除该用户的登录限制?',
+      '解除封禁提示',
+      {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning',
+        beforeClose: (action, instance, done) => {
+          if (action === 'confirm') {
+            instance.confirmButtonLoading = true;
+            instance.confirmButtonText = '解除中...';
+            setTimeout(() => {
+              cancelBanUserAPI(user.uid).then(response => {
+                console.log(response)
+                currentBanOperationUser.value.banned = false;
+                done();
+                ElMessage({
+                  message: '解除封禁成功',
+                  type: 'success',
                 })
-              }, 500)
-            } else done();
-          }
+              }).catch(error => {
+                console.log(error)
+                instance.confirmButtonText = '确认';
+                ElMessage({
+                  message: '解除封禁失败',
+                  type: 'error',
+                })
+              }).finally(() => {
+                instance.confirmButtonLoading = false;
+              })
+            }, 500)
+          } else done();
         }
-    ).then(() => {}).catch(() => {})
+      }
+    ).then(() => { }).catch(() => { })
   }
 }
 function handleCloseBanUserDialog() {
@@ -231,6 +213,7 @@ function handleBanUser(id) {
   padding: 12px 12px 24px;
   border-bottom: 1px solid #f2f2f2;
 }
+
 html.dark .sys-user-header {
   border-bottom-color: #4c4d4f;
 }
@@ -246,6 +229,7 @@ html.dark .sys-user-header {
 .approve {
   color: #228b22;
 }
+
 .disapprove {
   color: #d3691e;
 }
@@ -253,6 +237,7 @@ html.dark .sys-user-header {
 .ban {
   color: #d3691e;
 }
+
 .ban:hover {
   color: #ff0000;
 }
@@ -261,6 +246,7 @@ html.dark .sys-user-header {
   height: 100%;
   display: flex;
 }
+
 .expand-user .left-bar {
   width: 53px;
   background-color: #f5f7fa;
@@ -276,6 +262,7 @@ html.dark .sys-user-header {
     background: var(--el-bg-color);
     border-right: 0;
   }
+
   .expand-user .left-bar:after {
     box-shadow: var(--el-table-fixed-left-column) !important;
     content: "";
@@ -325,6 +312,7 @@ html.dark .users-table td.el-table-fixed-column--right {
 .users-table .el-loading-mask {
   margin-bottom: 80px;
 }
+
 html.dark .users-table .el-loading-mask {
   background-color: transparent;
 }
@@ -333,7 +321,8 @@ html.dark .users-table .el-loading-mask {
   padding: 0;
 }
 
-.users-table .el-table__expanded-cell, .users-table .el-input__wrapper {
+.users-table .el-table__expanded-cell,
+.users-table .el-input__wrapper {
   transition: unset !important;
 }
 

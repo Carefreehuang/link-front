@@ -400,32 +400,76 @@ router.beforeEach((to, from, next) => {
     }
 })
 
-// 新增函数：在项目启动时遍历所有路由并跳转
-async function visitAllRoutes() {
-    const routes = router.getRoutes();
-    for (const route of routes) {
-        if (route.path !== '*') { // 排除 404 路由
-            try {
-                await router.push(route.path);
-                // 可以添加适当的延迟，确保页面加载完成
-                await new Promise(resolve => setTimeout(resolve, 1000));
-            } catch (error) {
-                console.error(`跳转至 ${route.path} 时出错:`, error);
-            }
-        }
-    }
-    // 跳转回首页
-    await router.push('/');
-}
+// router.beforeEach(async (to, from, next) => {
+//     if (to.meta.title) {
+//         document.title = to.meta.title
+//     }
 
-// 标记是否为第一次启动
-let isFirstLaunch = true;
+//     let noTransitionRouteArray = ['index', 'hotPosts', 'latestPosts'];
+//     if (noTransitionRouteArray.indexOf(to.name) !== -1) {
+//         if (noTransitionRouteArray.indexOf(from.name) === -1) {
+//             to.meta.mainTansition = 'fade-transform';
+//             to.meta.bodyTransition = 'fade';
+//         } else {
+//             to.meta.mainTransition = 'noTransition';
+//             to.meta.bodyTransition = 'noTransition';
+//         }
+//     } else {
+//         to.meta.mainTransition = 'fade-transform';
+//         to.meta.bodyTransition = 'fade';
+//     }
+
+//     if (tokenExists()) {
+//         NProgress.start();
+//         if (to.path === '/login' || to.path === '/register') {
+//             document.title = global_title;
+//             next({path: '/'});
+//         } else {
+//             if (useUserStore().role.length === 0) {
+//                 try {
+//                     await useUserStore().getProfile();
+//                     useUserStore().isLogin = true;
+//                     useUserStore().token = getToken();
+//                 } catch (error) {
+//                     console.log(error)
+//                     if (error.code === 412 || error.code === 419) {
+//                         next({path: '/login'})
+//                         return;
+//                     }
+//                 }
+//             }
+//             if (to.meta.requireAdmin) {
+//                 const isADMIN = useUserStore().role.some(role => role.includes('ADMIN'));
+//                 if (!isADMIN) {
+//                     next({name: 'error'});
+//                     return;
+//                 }
+//             }
+//             if (to.meta.requireEmailVerified && !useUserStore().emailVerified) {
+//                 next({path: '/'})
+//                 ElMessage({
+//                     message: '请激活邮箱后访问',
+//                     type: 'error'
+//                 })
+//                 return;
+//             }
+//             next();
+//         }
+//     } else {
+//         NProgress.start();
+//         if (to.meta.requireAuth) {
+//             ElMessage({
+//                 showClose: true,
+//                 message: '请登录后访问',
+//                 type: 'error',
+//                 duration: 3000
+//             })
+//             next({path: '/login'})
+//         } else next()
+//     }
+// });
 
 router.afterEach(() => {
-    // if (isFirstLaunch) {
-    //     isFirstLaunch = false;
-    //     visitAllRoutes();
-    // }
     NProgress.done();
 })
 

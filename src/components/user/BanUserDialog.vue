@@ -2,8 +2,7 @@
   <el-dialog v-model="dialogModel" title="封禁用户" class="ban-user-dialog" :lock-scroll="false">
     <el-form label-width="80px" ref="banFormRef" :model="banForm" :rules="banRules">
       <el-form-item label="封禁用户">
-        <span v-text="props.user.nickname" style="margin-right: 8px; color: #ff8c00;"/>
-        <span v-text="'@' + props.user.username" style="color: #9acd31;"/>
+        <span v-text="props.user.username" style="margin-right: 8px; color: #ff8c00;"/>
       </el-form-item>
       <el-form-item label="封禁时长" prop="datetime">
         <el-date-picker
