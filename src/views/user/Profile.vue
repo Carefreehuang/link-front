@@ -56,9 +56,6 @@
         <el-tab-pane label="帖子" lazy>
           <UserPosts :username="props.username"/>
         </el-tab-pane>
-        <el-tab-pane label="擅长技能" lazy>
-          <UserPosts :username="props.username"/>
-        </el-tab-pane>
       </el-tabs>
     </el-main>
 

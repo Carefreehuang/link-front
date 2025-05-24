@@ -148,7 +148,7 @@
           </el-form-item>
           <el-form-item>
             <div>
-              <el-button size="default" @click="showAddTagOptionDialog = false">取消</el-button>
+              <el-button size="default" @click="showUpdateTagDialog = false">取消</el-button>
               <el-button size="default" @click="handleUpdateTag(updateTagFormRef)" :loading="updateTagLoading">更新</el-button>
               <el-popconfirm confirm-button-text="是" cancel-button-text="否" title="确定要删除吗?" @confirm="handleDeleteTag" :hide-after="50">
                 <template #reference>
