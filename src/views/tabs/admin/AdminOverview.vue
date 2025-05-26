@@ -12,7 +12,7 @@
           <el-statistic title="竞赛数" :value="forum.competitionNumber" />
         </el-card>
       </div>
-      <el-empty description="其它状态正在生产中" style="padding-top: 0;" />
+      <!-- <el-empty description="其它状态正在生产中" style="padding-top: 0;" /> -->
     </div>
   </div>
 </template>
