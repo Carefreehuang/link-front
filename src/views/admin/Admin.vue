@@ -8,21 +8,11 @@
         </el-icon>
         <template #title>概览</template>
       </el-menu-item>
-      <el-sub-menu index="2">
-        <template #title>
-          <el-icon>
-            <SetUp />
-          </el-icon>
-          <span>系统</span>
-        </template>
-        <el-menu-item index="1-1" v-if="false">系统配置</el-menu-item>
-        <el-menu-item index="/sys-ctrl/sensitive">敏感词配置</el-menu-item>
-      </el-sub-menu>
-      <el-menu-item :index="systemCtrlURI + '/mail'" v-if="false">
+      <el-menu-item index="/sys-ctrl/sensitive">
         <el-icon>
-          <Message />
+          <Failed />
         </el-icon>
-        <template #title>邮件</template>
+        <template #title>敏感词配置</template>
       </el-menu-item>
       <el-menu-item :index="systemCtrlURI + '/tag'">
         <el-icon>

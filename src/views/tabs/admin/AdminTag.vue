@@ -10,12 +10,12 @@
           <el-form-item label="标签名称" prop="name" :error="tagNameErrorText">
             <el-input v-model="tagForm.name" size="large"/>
           </el-form-item>
-          <el-form-item label="英文标识" prop="label" :error="tagLabelErrorText">
+          <!-- <el-form-item label="英文标识" prop="label" :error="tagLabelErrorText">
             <el-input v-model="tagForm.label" size="large"/>
           </el-form-item>
           <el-form-item label="标签图标" prop="icon">
             <el-input v-model="tagForm.icon" size="large"/>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item label="标签类型" prop="option" :error="tagOptionErrorText">
             <el-radio-group v-model="tagForm.option">
               <template v-for="option of tagOptions" :key="option.id">
@@ -28,9 +28,9 @@
             <el-button v-text="'添加类型'" @click="showAddTagOptionDialog = !showAddTagOptionDialog"/>
             <el-button v-text="'管理类型'" @click="openTagOptionManagementDialog"/>
           </el-form-item>
-          <el-form-item label="标签描述" prop="detail">
+          <!-- <el-form-item label="标签描述" prop="detail">
             <el-input v-model="tagForm.detail" size="large" rows="5" type="textarea"/>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item>
             <div>
               <el-button size="default" @click="showAddTagDialog = false">取消</el-button>
@@ -42,12 +42,12 @@
         <!-- 添加标签Option对话框的子对话框 -->
         <el-dialog v-model="showAddTagOptionDialog" title="添加标签类型" class="add-tap-option-dialog" append-to-body align-center @open="tagOptionFormRef.resetFields()" :lock-scroll="false">
           <el-form ref="tagOptionFormRef" :label-position="'top'" label-width="80px" :model="tagOptionForm" :rules="tagOptionRules">
-            <el-form-item label="显示名称" prop="name" :error="newTagOptionNameErrorText">
+            <el-form-item label="名称" prop="name" :error="newTagOptionNameErrorText">
               <el-input v-model="tagOptionForm.name" size="large" placeholder="例如：生活"/>
             </el-form-item>
-            <el-form-item label="英文标识" prop="label" :error="newTagOptionLabelErrorText">
+            <!-- <el-form-item label="英文标识" prop="label" :error="newTagOptionLabelErrorText">
               <el-input v-model="tagOptionForm.label" size="large" placeholder="eg: life"/>
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item>
               <div>
                 <el-button size="large" @click="showAddTagOptionDialog = false">取消</el-button>
@@ -62,7 +62,7 @@
       <el-dialog v-model="showManageTagOptionDialog" title="管理标签类型" class="manage-tag-option-dialog" align-center :lock-scroll="false">
         <el-table :data="tagOptions" stripe style="width: 100%" border>
           <el-table-column prop="name" label="类型名称" :width="nameColumnWidth" align="center"/>
-          <el-table-column prop="label" label="英文标识" :width="labelColumnWidth" align="center"/>
+          <!-- <el-table-column prop="label" label="英文标识" :width="labelColumnWidth" align="center"/> -->
           <el-table-column label="操作" align="center">
             <template #default="scope">
               <el-button :disabled="scope.row.label === 'other'" size="small" @click="openEditTagOptionDialog(scope.$index, scope.row)">编辑</el-button>
@@ -78,12 +78,12 @@
         <!-- 管理标签Option对话框的（编辑）子对话框 -->
         <el-dialog v-model="showEditTagOptionDialog" class="update-tag-option-dialog" title="编辑标签类型" align-center>
           <el-form ref="editTagOptionFormRef" label-position="right" label-width="80px" :model="editTagOptionForm" :rules="editTagOptionFormRules">
-            <el-form-item label="显示名称" prop="name" :error="tagOptionNameErrorText">
+            <el-form-item label="名称" prop="name" :error="tagOptionNameErrorText">
               <el-input v-model="editTagOptionForm.name" size="large"></el-input>
             </el-form-item>
-            <el-form-item label="英文标识" prop="label" :error="tagOptionLabelErrorText">
+            <!-- <el-form-item label="英文标识" prop="label" :error="tagOptionLabelErrorText">
               <el-input v-model="editTagOptionForm.label" size="large"></el-input>
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item>
               <div>
                 <el-button size="default" @click="showEditTagOptionDialog = false">取消</el-button>
@@ -103,7 +103,7 @@
                 <div class="tag">
                   <div>
                     <span class="tag-name" v-text="tag.name"/>
-                    <span class="tag-label" v-text="tag.label"/>
+                    <!-- <span class="tag-label" v-text="tag.label"/> -->
                   </div>
                   <el-button v-text="'编辑'" @click="handleShowUpdateTagDialog(tag)"/>
                 </div>
@@ -114,7 +114,7 @@
                 <div class="tag">
                   <div>
                     <span class="tag-name" v-text="tags[index+1].name"/>
-                    <span class="tag-label" v-text="tags[index+1].label"/>
+                    <!-- <span class="tag-label" v-text="tags[index+1].label"/> -->
                   </div>
                   <el-button v-text="'编辑'" @click="handleShowUpdateTagDialog(tags[index+1])"/>
                 </div>
@@ -130,12 +130,12 @@
           <el-form-item label="标签名称" prop="name" :error="updateTagNameErrorText">
             <el-input v-model="updateTagForm.name" size="large" :disabled="updateTagForm.name === '未分类'"/>
           </el-form-item>
-          <el-form-item label="英文标识" prop="label" :error="updateTagLabelErrorText">
+          <!-- <el-form-item label="英文标识" prop="label" :error="updateTagLabelErrorText">
             <el-input v-model="updateTagForm.label" size="large" :disabled="updateTagForm.name === '未分类'"/>
           </el-form-item>
           <el-form-item label="标签图标" prop="icon">
             <el-input v-model="updateTagForm.icon" size="large" placeholder="eg: fa-solid fa-flag"/>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item label="标签类型" prop="option" :error="updateTagOptionErrorText">
             <el-radio-group v-model="updateTagForm.option" :disabled="updateTagForm.name === '未分类'">
               <template v-for="option of tagOptions" :key="option.id">
@@ -143,9 +143,9 @@
               </template>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="标签详情" prop="detail">
+          <!-- <el-form-item label="标签详情" prop="detail">
             <el-input v-model="updateTagForm.detail" size="large"/>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item>
             <div>
               <el-button size="default" @click="showUpdateTagDialog = false">取消</el-button>
@@ -195,10 +195,10 @@ const tagOptionErrorText = ref();
 const tagFormRef = ref<FormInstance>();
 const tagForm = reactive({
   name: '',
-  icon: '',
-  label: '',
+  icon: 'icon',
+  label: 'label',
   option: '',
-  detail: '',
+  detail: 'detail',
 })
 function validateTagName(rule: any, value: any, callback: any) {
   const reg = /^[\u4E00-\u9FA5A-Za-z0-9]+$/;
@@ -288,7 +288,7 @@ const newTagOptionNameErrorText = ref();
 const newTagOptionLabelErrorText = ref();
 const tagOptionFormRef = ref<FormInstance>();
 const tagOptionForm = reactive({
-  label: '',
+  label: 'label',
   name: '',
 })
 function tagOptionLabelValidator(rule: any, value: any, callback: any) {

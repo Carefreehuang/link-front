@@ -2,15 +2,14 @@
   <div>
     <div class="box-header">
       <div>
-        <el-input v-model="inputVal" placeholder="请输入敏感词" size="large" class="sensitiveWord-input">
-          <template #prepend>
+        <el-input v-model="inputVal" placeholder="输入敏感词进行添加" size="large" class="sensitiveWord-input">
+          <!-- <template #prepend>
             <el-select v-model="selectVal" placeholder="选择" style="width: 85px" size="large">
               <el-option label="添加" value="add" />
             </el-select>
-          </template>
+          </template> -->
           <template #append>
-            <el-button :icon="(selectVal === 'add') ? Pointer : Search" type="primary" plain
-                       :loading="unitButtonLoading" @click="handleClickButton"/>
+            <el-button :icon="Plus" type="primary" plain :loading="unitButtonLoading" @click="handleClickButton" />
           </template>
         </el-input>
         <div style="text-align: center;">
@@ -26,9 +25,10 @@
               <el-card shadow="hover" class="sensitiveWord-card">
                 <div class="sensitiveWord">
                   <div class="word">
-                    <el-text truncated v-text="item.word"/>
+                    <el-text truncated v-text="item.word" />
                   </div>
-                  <el-button v-text="'编辑'" class="edit-button" size="small" @click="handleShowUpdateSensitiveDialog(item)"/>
+                  <el-button :icon="Delete" plain class="edit-button" type="danger" round size="small"
+                    @click="deleteSensitiveWord(item)" />
                 </div>
               </el-card>
             </td>
@@ -36,10 +36,10 @@
               <el-card shadow="hover" class="sensitiveWord-card">
                 <div class="sensitiveWord">
                   <div class="word">
-                    <el-text truncated v-text="sensitiveWords[index+1].word"/>
+                    <el-text truncated v-text="sensitiveWords[index + 1].word" />
                   </div>
-                  <el-button v-text="'编辑'" class="edit-button" size="small"
-                             @click="handleShowUpdateSensitiveDialog(sensitiveWords[index+1])"/>
+                  <el-button :icon="Delete" plain class="edit-button" type="danger" round size="small"
+                    @click="deleteSensitiveWord(sensitiveWords[index + 1])" />
                 </div>
               </el-card>
             </td>
@@ -47,10 +47,10 @@
               <el-card shadow="hover" class="sensitiveWord-card">
                 <div class="sensitiveWord">
                   <div class="word">
-                    <el-text truncated v-text="sensitiveWords[index+2].word"/>
+                    <el-text truncated v-text="sensitiveWords[index + 2].word" />
                   </div>
-                  <el-button v-text="'编辑'" class="edit-button" size="small"
-                             @click="handleShowUpdateSensitiveDialog(sensitiveWords[index+2])"/>
+                  <el-button :icon="Delete" plain class="edit-button" type="danger" round size="small"
+                    @click="deleteSensitiveWord(sensitiveWords[index + 2])" />
                 </div>
               </el-card>
             </td>
@@ -58,10 +58,10 @@
               <el-card shadow="hover" class="sensitiveWord-card">
                 <div class="sensitiveWord">
                   <div class="word">
-                    <el-text truncated v-text="sensitiveWords[index+3].word"/>
+                    <el-text truncated v-text="sensitiveWords[index + 3].word" />
                   </div>
-                  <el-button v-text="'编辑'" class="edit-button" size="small"
-                             @click="handleShowUpdateSensitiveDialog(sensitiveWords[index+3])"/>
+                  <el-button :icon="Delete" plain class="edit-button" type="danger" round size="small"
+                    @click="deleteSensitiveWord(sensitiveWords[index + 3])" />
                 </div>
               </el-card>
             </td>
@@ -69,10 +69,10 @@
               <el-card shadow="hover" class="sensitiveWord-card">
                 <div class="sensitiveWord">
                   <div class="word">
-                    <el-text truncated v-text="sensitiveWords[index+4].word"/>
+                    <el-text truncated v-text="sensitiveWords[index + 4].word" />
                   </div>
-                  <el-button v-text="'编辑'" class="edit-button" size="small"
-                             @click="handleShowUpdateSensitiveDialog(sensitiveWords[index+4])"/>
+                  <el-button :icon="Delete" plain class="edit-button" type="danger" round size="small"
+                    @click="deleteSensitiveWord(sensitiveWords[index + 4])" />
                 </div>
               </el-card>
             </td>
@@ -80,19 +80,21 @@
         </template>
       </table>
     </div>
-    <el-empty :description="(sensitiveWords.length === 0) ? '还没有敏感词' : '没有更多了'"/>
+    <el-empty :description="(sensitiveWords.length === 0) ? '还没有敏感词' : '没有更多了'" />
 
-    <el-dialog v-model="showUpdateSensitiveDialog" title="编辑敏感词" class="update-sensitiveWord-dialog" align-center @closed="sensitiveDialogObj = {}" :lock-scroll="false">
+    <el-dialog v-model="showUpdateSensitiveDialog" title="编辑敏感词" class="update-sensitiveWord-dialog" align-center
+      @closed="sensitiveDialogObj = {}" :lock-scroll="false">
       <el-form label-position="left" label-width="55px" :model="updateSensitiveForm" size="large">
         <el-form-item label="原内容">
-          <el-input disabled v-model="sensitiveDialogObj.word"/>
+          <el-input disabled v-model="sensitiveDialogObj.word" />
         </el-form-item>
         <el-form-item label="新内容">
-          <el-input v-model="updateSensitiveForm.word"/>
+          <el-input v-model="updateSensitiveForm.word" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" plain @click="showUpdateSensitiveDialog = false" size="default">取消</el-button>
-          <el-button type="primary" plain :loading="updateSensitiveLoading" @click="handleUpdateSensitive" size="default">更新</el-button>
+          <el-button type="primary" plain :loading="updateSensitiveLoading" @click="handleUpdateSensitive"
+            size="default">更新</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -100,10 +102,10 @@
 </template>
 
 <script setup>
-import {onBeforeMount, reactive, ref, watch} from 'vue';
-import {Pointer, Search} from '@element-plus/icons-vue';
-import {addSensitiveWordAPI, getSensitiveWordsAPI, updateSensitiveWordAPI} from "../../../api/admin/sensitiveAPI";
-import {ElMessage} from "element-plus";
+import { onBeforeMount, reactive, ref, watch } from 'vue';
+import { Plus, Pointer, Search, Delete } from '@element-plus/icons-vue';
+import { addSensitiveWordAPI, getSensitiveWordsAPI, updateSensitiveWordAPI, deleteSensitiveWordAPI } from "../../../api/admin/sensitiveAPI";
+import { ElMessage } from "element-plus";
 
 const inputVal = ref();
 const selectVal = ref("add");
@@ -169,6 +171,29 @@ function handleShowUpdateSensitiveDialog(sensitiveWord) {
   sensitiveDialogObj.value = sensitiveWord;
 }
 
+// 清空聊天记录的方法
+const deleteSensitiveWord = async (sensitiveWord) => {
+  try {
+    const result = await ElMessageBox.confirm('确认删除该敏感词?', '取消确认', {
+      type: 'warning',
+      lockScroll: false,
+    });
+    if (result === 'confirm') {
+      const res = await deleteSensitiveWordAPI(sensitiveWord.id);
+      sensitiveWords.value = sensitiveWords.value.filter(word => word.id !== sensitiveWord.id);
+      ElMessage({
+        message: "删除敏感词成功",
+        type: 'success',
+      });
+    }
+  } catch (error) {
+    // 用户取消操作时，ElMessageBox.confirm 会抛出异常，这里可以选择忽略
+    if (error !== 'cancel') {
+      console.error('删除敏感词时发生错误:', error);
+    }
+  }
+};
+
 const updateSensitiveLoading = ref(false);
 function handleUpdateSensitive() {
   updateSensitiveLoading.value = true;
@@ -232,6 +257,7 @@ function tdWidth() {
   /*background: radial-gradient(#e4e7e9 4px,transparent 5px),radial-gradient(#000000 3px,transparent 4px),linear-gradient(#e8ebed 4px,transparent 0),linear-gradient(45deg,transparent 74px,transparent 75px,#a4a4a4 75px,#afb0b2 76px,transparent 77px,transparent 109px),linear-gradient(-45deg,transparent 75px,transparent 76px,#425e6b 76px,#e4e7e9 77px,transparent 78px,transparent 109px),#e8ebed;
   background-size: 109px 109px,109px 109px,100% 6px,109px 109px,109px 109px;*/
 }
+
 html.dark .box-header {
   /*background: radial-gradient(#232830 3px,transparent 4px),radial-gradient(#000000 3px,transparent 4px),linear-gradient(#232830 4px,transparent 0),linear-gradient(45deg,transparent 74px,transparent 75px,#425560 75px,#3d5966 76px,transparent 77px,transparent 109px),linear-gradient(-45deg,transparent 75px,transparent 76px,#425560 76px,#425560 77px,transparent 78px,transparent 109px),#232830;
   background-size: 109px 109px,109px 109px,100% 6px,109px 109px,109px 109px;*/
@@ -285,28 +311,33 @@ html.dark .box-header {
     width: 100% !important;
     display: block;
   }
+
   .sensitiveWord-card {
     margin-right: unset;
     max-width: unset;
   }
+
   .sensitiveWord {
     justify-content: space-between;
   }
+
   .word {
     max-width: 200px;
   }
-  tr > td:not(:last-child) > .sensitiveWord-card {
+
+  tr>td:not(:last-child)>.sensitiveWord-card {
     margin-right: unset;
   }
+
   .box-body {
     padding: 10px 5px;
   }
+
   .box-header {
     min-height: 150px;
     border-radius: 0;
   }
 }
-
 </style>
 
 <style>

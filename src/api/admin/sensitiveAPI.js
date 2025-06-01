@@ -38,3 +38,13 @@ export function updateSensitiveWordAPI(sensitive) {
         }
     })
 }
+
+export function deleteSensitiveWordAPI(id) {
+    return request({
+        url: `/sys-ctrl/sensitiveWord/${id}`,
+        method: 'delete',
+        headers: {
+            requireToken: true
+        }
+    })
+}
